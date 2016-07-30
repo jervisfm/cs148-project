@@ -10,7 +10,7 @@ To install assimp :
   * make
   * sudo make install
 
-If the librairy was installed into /usr/local/lib, you may need to copy it into /usr/lib
+If the library was installed into /usr/local/lib, you may need to copy it into /usr/lib
 
  To install SOIL :
   * Download the latest SOIL version at http://www.lonesock.net/soil.html
@@ -21,3 +21,4 @@ If the librairy was installed into /usr/local/lib, you may need to copy it into 
   * make
   * sudo make install
 
+For your convenience, copies of the above third party libraries are also available under the third_party_deps/ folder of this project.
