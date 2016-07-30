@@ -27,6 +27,11 @@ struct Vertex {
     glm::vec2 TexCoords;
 };
 
+struct AABB {
+    glm::vec3 front;
+    glm::vec3 back;
+};
+
 struct Texture {
     GLuint id;
     string type;
@@ -42,11 +47,17 @@ class Mesh {
         /*  Functions  */
         Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures);
         void Draw(Shader shader);
+        AABB boundingBox;
+        AABB computeAABB();
+        bool nextTriangle(Vertex*, Vertex*, Vertex*);
+        void resetTriangleIterator() { indexIndex = 0; }
+        bool isMirror=false;
     private:
         /*  Render data  */
         GLuint VAO, VBO, EBO;
         /*  Functions    */
         void setupMesh();
+        unsigned indexIndex=0;
 };
 
 #endif // MESH_H

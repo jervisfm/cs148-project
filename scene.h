@@ -8,7 +8,6 @@ using namespace std;
 
 struct SceneElement {
     Model* m;
-    bool mirror;
     Shader* shader;
 };
 
@@ -19,10 +18,9 @@ public:
 
     //Attributes
     vector<SceneElement> models;
-    void addModel(Model *m, bool mirror, Shader *s) {
+    void addModel(Model *m, Shader *s) {
         SceneElement se;
         se.m = m;
-        se.mirror = mirror;
         se.shader = s;
         this->models.push_back(se);
     }

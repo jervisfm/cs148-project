@@ -1,5 +1,7 @@
 #include "mesh.h"
 #include <iostream>
+#include <float.h>
+
 Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures)
 {
     this->vertices = vertices;
@@ -7,6 +9,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> text
     this->textures = textures;
 
     this->setupMesh();
+    this->boundingBox = this->computeAABB();
 }
 
 void Mesh::setupMesh()
@@ -74,4 +77,41 @@ void Mesh::Draw(Shader shader)
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+}
+
+AABB Mesh::computeAABB(){
+    glm::vec3 min, max, pos;
+    min = glm::vec3(DBL_MAX, DBL_MAX, DBL_MAX);
+    max = glm::vec3(-DBL_MAX, -DBL_MAX, -DBL_MAX);
+
+    for (int i = 0; i < this->indices.size(); i++)
+    {
+        pos = this->vertices[i].Position;
+        for (int j = 0; j < 3; j++)
+        {
+            if (pos[j] < min[j])
+                min[j] = pos[j];
+            if (pos[j] > max[j])
+                max[j] = pos[j];
+        }
+    }
+
+    AABB res;
+    res.back = max;
+    res.front = min;
+    return res;
+}
+
+bool Mesh::nextTriangle(Vertex* A, Vertex* B, Vertex* C) {
+    *A = this->vertices[this->indexIndex];
+    *B = this->vertices[this->indexIndex+1];
+    *C = this->vertices[this->indexIndex+2];
+
+    if (this->indexIndex + 3 < this->vertices.size())
+        this->indexIndex += 3;
+    else {
+        this->indexIndex = 0;
+        return false;
+    }
+    return true;
 }
