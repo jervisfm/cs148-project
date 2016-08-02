@@ -18,5 +18,7 @@
 ._*
 
 
+.idea/*
+
 # Ignore built program to avoid spurious conflicts.
 pyramid
