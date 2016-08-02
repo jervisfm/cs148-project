@@ -1,6 +1,6 @@
 CPP = g++
 LD = g++
-CPPFLAGS = -O3 -std=c++11
+CPPFLAGS = -O3 -std=c++11 -g
 LDFLAGS =
 TARGET = pyramid
 OBJS = objs/main.o objs/setup.o objs/controls.o objs/mesh.o objs/model.o objs/scene.o objs/lightstate.o
