@@ -37,7 +37,10 @@ int main()
     Shader shader("shader.vs", "shader.frag");
     Scene* scene = new Scene();
     // Load models
-    Model ourModel("nanosuit/nanosuit.obj");
+    //Model ourModel("nanosuit/nanosuit.obj");
+    // TODO: resolve this model crashing ...
+    Model ourModel("pyramid_model/pyramid.obj");
+
     // Draw the loaded model
     glm::mat4 model(1.);
     model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
