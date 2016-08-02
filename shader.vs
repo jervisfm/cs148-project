@@ -6,6 +6,8 @@ layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoords;
 
 out vec2 TexCoords;
+out vec3 FragPos;
+out vec3 Normal;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -14,6 +16,16 @@ uniform mat4 projection;
 void main()
 {
     gl_Position = projection * view * model * vec4(position, 1.0f);
+    // Convert normal vector and fragment position into world-space coordinates.
+    FragPos = vec3(model * vec4(position, 1.0f));
+    // For the normal, we have to be careful to use a Normal matrix
+    // to do the conversion. Normal matrix is defined as inverse of
+    // of transpose of model matrix. Also, Normal vector only have direction,
+    // so downscale normal matrix to 3x3 to get rid of translation
+    // component.
+    mat3 normalMatrix = mat3(transpose(inverse(model)));
+    Normal = normalMatrix * normal;
+
     TexCoords = texCoords;
 }
 

@@ -37,8 +37,8 @@ int main()
     Shader shader("shader.vs", "shader.frag");
     Scene* scene = new Scene();
     // Load models
-    //Model ourModel("nanosuit/nanosuit.obj");
-    Model ourModel("pyramid_model/pyramid.obj");
+    Model ourModel("nanosuit/nanosuit.obj");
+    //Model ourModel("pyramid_model/pyramid.obj");
 
     // Draw the loaded model
     glm::mat4 model(1.);
