@@ -38,7 +38,6 @@ int main()
     Scene* scene = new Scene();
     // Load models
     //Model ourModel("nanosuit/nanosuit.obj");
-    // TODO: resolve this model crashing ...
     Model ourModel("pyramid_model/pyramid.obj");
 
     // Draw the loaded model
