@@ -20,14 +20,14 @@ vec4 ComputeDirectionalLight(vec3 light_direction, float light_radius, vec3 frag
   // For directional lights, we assume that they do not lose any power.
   float light_reduction_coefficient = 1.0;
 
-  float diffuse_light_coefficient = max(0.0, dot(normal, surface_to_light_vector));
+  float diffuse_light_coefficient = max(0.0, dot(Normal, surface_to_light_vector));
   return vec4(diffuse_light_coefficient, diffuse_light_coefficient, diffuse_light_coefficient, 1);
 }
 
 void main()
 {
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
-    vec4 directional_light_color = ComputeDirectionalLight(uniform_light_position, uniform_light_direction,
+    vec4 directional_light_color = ComputeDirectionalLight(uniform_light_direction,
                                                            uniform_light_radius, FragPos);
     color = diffuse_texture_color * directional_light_color;
     color = diffuse_texture_color;
