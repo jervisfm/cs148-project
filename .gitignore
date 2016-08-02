@@ -5,3 +5,18 @@
 *.includes
 *~
 *.o
+
+# ignore emacs related temp files
+.m~
+.*~
+.~
+*.#*
+#*.*#
+#*#
+#*
+\#*\#
+._*
+
+
+# Ignore built program to avoid spurious conflicts.
+pyramid
