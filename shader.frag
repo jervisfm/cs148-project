@@ -13,9 +13,15 @@ uniform vec3 uniform_light_direction; // should point towards light source.
 uniform float uniform_light_radius;   // radius of light source.
 
 
-vec4 ComputeDirectionalLight(vec3 light_position, vec3 light_direction, float light_radius, vec3 frag_position) {
+// Implementation of directional lighting based on tutorial at:
+// http://www.tomdalling.com/blog/modern-opengl/08-even-more-lighting-directional-lights-spotlights-multiple-lights/
+vec4 ComputeDirectionalLight(vec3 light_direction, float light_radius, vec3 frag_position) {
+  vec3 surface_to_light_vector = normalize(light_direction);
+  // For directional lights, we assume that they do not lose any power.
+  float light_reduction_coefficient = 1.0;
 
- return vec4(0.,0.,0.,1);
+  float diffuse_light_coefficient = max(0.0, dot(normal, surface_to_light_vector));
+  return vec4(diffuse_light_coefficient, diffuse_light_coefficient, diffuse_light_coefficient, 1);
 }
 
 void main()
