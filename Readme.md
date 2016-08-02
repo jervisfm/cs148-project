@@ -22,3 +22,7 @@ If the library was installed into /usr/local/lib, you may need to copy it into /
   * sudo make install
 
 For your convenience, copies of the above third party libraries are also available under the third_party_deps/ folder of this project.
+
+
+## References
+* Example wooden texture: http://en.flossmanuals.net/blender/texturing/
