@@ -17,7 +17,9 @@ void main()
 {
     gl_Position = projection * view * model * vec4(position, 1.0f);
     // Convert normal vector and fragment position into world-space coordinates.
-    FragPos = vec3(model * vec4(position, 1.0f));
+    vec4 FragPos4 = model * vec4(position, 1.0f);
+    FragPos = vec3(FragPos4 / FragPos4.w);
+
     // For the normal, we have to be careful to use a Normal matrix
     // to do the conversion. Normal matrix is defined as inverse of
     // of transpose of model matrix. Also, Normal vector only have direction,

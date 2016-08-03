@@ -25,7 +25,7 @@ enum Camera_Movement {
 const GLfloat YAW        = -90.0f;
 const GLfloat PITCH      =  0.0f;
 const GLfloat SPEED      =  3.0f;
-const GLfloat SENSITIVTY =  0.25f;
+const GLfloat SENSITIVTY =  0.35f;
 const GLfloat ZOOM       =  45.0f;
 
 
@@ -76,14 +76,19 @@ public:
     void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
     {
         GLfloat velocity = this->MovementSpeed * deltaTime;
+        glm::vec3 movFront = this->Front;
+        movFront.y = 0;
+        movFront = glm::normalize(movFront);
         if (direction == FORWARD)
-            this->Position += this->Front * velocity;
+            this->Position += movFront * velocity;
         if (direction == BACKWARD)
-            this->Position -= this->Front * velocity;
+            this->Position -= movFront * velocity;
         if (direction == LEFT)
             this->Position -= this->Right * velocity;
         if (direction == RIGHT)
             this->Position += this->Right * velocity;
+
+        //std::cout <<
     }
 
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -111,12 +116,12 @@ public:
     // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(GLfloat yoffset)
     {
-        if (this->Zoom >= 1.0f && this->Zoom <= 45.0f)
+        /*if (this->Zoom >= 1.0f && this->Zoom <= 45.0f)
             this->Zoom -= yoffset;
         if (this->Zoom <= 1.0f)
             this->Zoom = 1.0f;
         if (this->Zoom >= 45.0f)
-            this->Zoom = 45.0f;
+            this->Zoom = 45.0f;*/
     }
 
 private:

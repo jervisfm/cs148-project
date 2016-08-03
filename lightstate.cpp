@@ -118,3 +118,11 @@ HitRecord intersectTriangle(Ray ray, Mesh &mesh, Vertex A, Vertex B, Vertex C)
         return r;
     }
 }
+
+void LightState::bindLights(Shader shader) {
+    // TODO : need to support more ligths, to be done after Milestone
+    vector<DirectionalLight> lights = this->getDirectionalLights();
+    glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_position"), lights[0].startPos.x, lights[0].startPos.y, lights[0].startPos.z);
+    glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_direction"), lights[0].dir.x, lights[0].dir.y, lights[0].dir.z);
+    glUniform1f(glGetUniformLocation(shader.Program, "uniform_light_radius"), lights[0].radius);
+}

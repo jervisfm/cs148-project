@@ -31,33 +31,61 @@
 // The MAIN function, from here we start our application and run our Game loop
 int main()
 {
-    auto window = initWindow(800, 600);
+    auto window = initWindow(1024, 768);
 
     // Setup and compile our shaders
     Shader shader("shader.vs", "shader.frag");
     Scene* scene = new Scene();
     // Load models
-    Model ourModel("nanosuit/nanosuit.obj");
-    //Model ourModel("pyramid_model/pyramid.obj");
+    //Model ourModel("nanosuit/nanosuit.obj");
+    Model ourModel("pyramid_model/pyramid.obj");
 
     // Draw the loaded model
     glm::mat4 model(1.);
-    model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+    model = glm::translate(model, glm::vec3(0.0f, -0.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit too big for our scene, so scale it down
     ourModel.setModelMatrix(model);
     scene->addModel(&ourModel, &shader);
+
+    Model mirror("mirror1.obj");
+    mirror.meshes[0].isMirror = true;
+    glm::mat4 model2(1.);
+    model2 = glm::translate(model2, glm::vec3(-0.5f, -0.25f, 2.f));
+    model2 = glm::scale(model2, glm::vec3(0.5f, 0.5f, 0.5f));
+    mirror.setModelMatrix(model2);
+    //scene->addModel(&mirror, &shader);
+
+
     // Draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //ok, test the lightstate
     LightState ls(*scene);
     DirectionalLight dl;
-    dl.dir = glm::vec3(0.,0.,1.);
-    dl.startPos = glm::vec3(0., 0., -2.);
-    dl.radius = 0.2;
+    dl.dir = glm::vec3(0.,0.,-1.);
+    dl.startPos = glm::vec3(0., 0.0, 2.);
+    dl.radius = 0.55;
     ls.addPrimaryLight(dl);
+
+    Model sphere("sphere.obj");
+    //sphere.meshes[0].isMirror = true;
+    glm::mat4 model3(1.);
+    model3 = glm::translate(model3, dl.startPos);
+    model3 = glm::scale(model3, glm::vec3(0.2f, 0.2f, 0.2f));
+    sphere.setModelMatrix(model3);
+    scene->addModel(&sphere, &shader);
+
+    Model sphere2("sphere.obj");
+    //sphere.meshes[0].isMirror = true;
+    glm::mat4 model4(1.);
+    model4 = glm::translate(model4, dl.startPos+dl.dir);
+    model4 = glm::scale(model4, glm::vec3(0.1f, 0.1f, 0.1f));
+    sphere2.setModelMatrix(model4);
+    scene->addModel(&sphere2, &shader);
+
+
+
+    // Needs only to be called if the geometry changed, or if lights are added !
     ls.updateState();
-    vector<DirectionalLight> lights = ls.getDirectionalLights();
-    std::cout << lights[0].dir.z << endl;
 
     //Iterate over all triangles.
     /*Vertex A, B, C;
@@ -71,6 +99,9 @@ int main()
     while(!glfwWindowShouldClose(window))
     {
         shader.Use();
+        //bind the lights
+        ls.bindLights(shader);
+
         //Update the view and projection matrices
         updateState(shader);
 

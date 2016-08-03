@@ -29,9 +29,10 @@ GLint TextureFromFile(const char* path, string directory)
 
 void Model::Draw(Shader shader)
 {
+    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
     for(GLuint i = 0; i < this->meshes.size(); i++)
         this->meshes[i].Draw(shader);
-    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
+
 }
 
 void Model::loadModel(string path)

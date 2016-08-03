@@ -48,11 +48,14 @@ public:
 
     void updateState();
 
+    void bindLights(Shader shader);
+    std::vector<DirectionalLight> primaryLights;
+
 private:
     Scene scene;
     std::vector<LightRay> lightRays;
     std::vector<DirectionalLight> directionalLights;
-    std::vector<DirectionalLight> primaryLights;
+
     DirectionalLight ShootRay(DirectionalLight dl);
 };
 
