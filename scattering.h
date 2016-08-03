@@ -15,11 +15,11 @@ struct VirtualPlane {
 class Scattering
 {
 public:
-    VirtualPlane(){
+    Scattering(){
 	numLattice = 10;
 	n = 8;
-
     }
+    void makeLightScatter();
 private:
     int numLattice;
     int n;   // n x n lattice

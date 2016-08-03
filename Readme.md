@@ -24,12 +24,21 @@ If the library was installed into /usr/local/lib, you may need to copy it into /
 For your convenience, copies of the above third party libraries are also available under the third_party_deps/ folder of this project.
 
 
+## Images
+### Pyramid Model 1
+![example_image_1](images/pyramid_model.png)
+
+### Pyramid Model Close up
+![example_image_2](images/pyramid_model2.png)
+
 ## TODO
 * Update pyramid texture to use more realistic bricks instead of the placeholder wooden texture.
 
 
 ## Apply textures in blender
 * Make sure that you're in edit mode for the right hand pane so that when you press 'U', you can "unwrap" the texture.
+
+
 
 ## References
 The following resources were consulted in the completion of this assignment:

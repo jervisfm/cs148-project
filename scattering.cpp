@@ -1,8 +1,7 @@
-//#include "scene.h"
-
-#define M_PI = 3.141592635897932384626433832795
+#include "scattering.h"
 
 using namespace std;
+using namespace glm;
 
 /* Algorithm from: 
 "Interactive Rendering Method for Displaying Shafts of Light"
@@ -18,7 +17,14 @@ uniform float uniform_light_radius;
 uniform vec3 uniform_light_end_position;
 vec3 LightColor(1.0,1.0,1.0);
 
-out VirtualPlane vp[numLattice];
+//out
+VirtualPlane vp[numLattice];
+
+vec3 scale3(vec3 vector, float scalar){
+    vector[0] = vector[0] * scalar;
+    vector[1] = vector[1] * scalar;
+    vector[2] = vector[2] * scalar;
+}    
 
 //given as an approximation of the mie scattering afffect
 double phaseFunction(double radAngle){
@@ -61,8 +67,8 @@ bool withinLight(vec3 pos){
 //Code came from the following tutorial. 
 //http://joshbeam.com/articles/dynamic_lightmaps_in_opengl/
 unsigned int generate_LightMap(vec3 vertices[4], float s_dist, float t_dist){
-    int LightMap_Size = ;
-    static unsigned char data[ LightMap_Size * LightMap_Size * 3];
+    const int LightMap_Size = 12;
+    static unsigned char data[LightMap_Size * LightMap_Size * 3];
     static unsigned int lightmap_tex_num = 0;
     unsigned int i, j;
     vec3 pos;
@@ -96,7 +102,7 @@ unsigned int generate_LightMap(vec3 vertices[4], float s_dist, float t_dist){
         t += step;
         s = 0.0f;
     }
-​    glBindTexture(GL_TEXTURE_2D, lightmap_tex_num);
+    glBindTexture(GL_TEXTURE_2D, lightmap_tex_num);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -118,7 +124,7 @@ VirtualPlane createVirtualPlane(vec3 vertices[4], int textureNum){
 	return v;
 }
 
-void main(){
+void Scattering:: makeLightScatter(){
 
 	//cube points (front/back)(top/bottom)(left/right)
 	vec4 cube[8];
@@ -142,6 +148,7 @@ void main(){
 		//divide each point by w;
 		for(int y = 0; y < 3; y++){
 			finalCubeVert[x][y] = transCube[x][y]/transCube[x][3];
+		}
 	}
 	//calculate direction of edges of frustrum
 	vec3 edgeFrustrum[4];
@@ -151,7 +158,7 @@ void main(){
 	edgeFrustrum[3]  = finalCubeVert[7] - finalCubeVert[3]; //bottomRight edge
 	
 	//Variables for virtual plane and lattice's calculation
-	double deltaT = length(edgeTopLeft)/numLattice;
+	double deltaT = length(edgeFrustrum[0])/numLattice;
 	vec3 planeVert[4];
 	vec3 planeEdges[2];
 	double deltaNx;
@@ -167,13 +174,13 @@ void main(){
 
 	//camera in world coordinates = inverse of 0,0,0,1 divide by w
 	for(int a = 0; a < 3; a++){
-	    viewPosition[a] = worldViewTemp[a]/worldView[3];
+	    viewPosition[a] = worldViewTemp[a]/worldViewTemp[3];
 	}
 
 	for(int i = 1; i < numLattice; i++){
 	    //determine start/end points for new plane
 	    for(int j = 0; j < 4; j++){
-		planeVert[j] = finalCubeVert[j]+(deltaT*i)*(edgeFrustrum[j]);
+		planeVert[j] = finalCubeVert[j]+scale3(edgeFrustrum[j], deltaT*i);
 	    }
 	    //edge parallel to screen on x - axis
 	    planeEdges[0] = planeVert[1]-planeVert[0];
@@ -187,11 +194,13 @@ void main(){
 	    for(int k = 0; k < n; k++){ //y - axis
 	
 		for(int l = 0; l < n; k++){//move along x-axis
-		    P = planeVert[0] + (deltaNx*l)*planeEdges[0] + (deltaNy*k)*planeEdges[1]);
+		    P = planeVert[0] + scale3(planeEdges[0], deltaNx*l) + scale3(planeEdges[1], deltaNy*k);
 		    //compute distance from P to camera, lightsource
 		    PToLight = uniform_light_position - P;
 		    PToView = viewPosition - P;
-		    data[k*n+l] = (unsigned char)  (255.0f * IntensityModifier(computeAlphaAngle(PToLight, PToView), length(PToView), length(PToLight), deltaT));       
+		    
+ 			//TODO: Add intensity to a texture that gets GL_modulate 
+		    intensityData[k*n+l] = (unsigned char)  (255.0f * IntensityModifier(computeAlphaAngle(PToLight, PToView), length(PToView), length(PToLight), deltaT));       
 		}    
 	    }
 	    //need to create a light map texture for each lattice
@@ -209,49 +218,3 @@ void main(){
 	//	render virtual plane with additive blending function 	
 
 }
-/*
-bool Scene::nextTriangle(Vertex *A, Vertex *B, Vertex *C) {
-    SceneElement se = models[modelIndex];
-    Mesh mesh =  se.m->meshes[meshIndex];
-    Vertex v;
-
-    v = mesh.vertices[mesh.indices[indexIndex]];
-    *A = se.m->transformPoint(v);
-
-    v = mesh.vertices[mesh.indices[indexIndex+1]];
-    *B = se.m->transformPoint(v);
-
-    v = mesh.vertices[mesh.indices[indexIndex+2]];
-    *C = se.m->transformPoint(v);
-    //And now update the indices
-    if (indexIndex + 3 < mesh.indices.size()) {
-        indexIndex += 3;
-    }
-    else {
-        indexIndex = 0;
-        //Maybe next mesh
-        if (meshIndex + 1 < se.m->meshes.size())
-        {
-            meshIndex += 1;
-        }
-        else
-        {
-            //This was the last mesh in the model. Get next model
-            meshIndex = 0;
-            if (modelIndex + 1 < models.size())
-            {
-                modelIndex += 1;
-            }
-            else
-            {
-                resetTriangleIterator(); // reset the iterator
-                return false; //We have reached the end
-            }
-        }
-    }
-    return true;
-}
-
-void Scene::resetTriangleIterator() {
-    indexIndex = meshIndex = modelIndex = 0; // reset the iterator
-}*/
