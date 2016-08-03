@@ -128,9 +128,19 @@ void LightState::bindLights(Shader shader) {
     vector<DirectionalLight> lights = this->getDirectionalLights();
     //std::cout << "Lights start pos : " << lights[0].startPos.x<< ", " << lights[0].startPos.y << ", " << lights[0].startPos.z <<std::endl;
     //std::cout << "Lights dir : " << lights[0].dir.x<< ", " << lights[0].dir.y << ", " << lights[0].dir.z <<std::endl;
+    int numLights = lights.size();
+    glUniform1i(glGetUniformLocation(shader.Program, "numLights"), numLights);
 
-    glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_position"), lights[0].startPos.x, lights[0].startPos.y, lights[0].startPos.z);
-    glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_end_position"), lights[0].endPos.x, lights[0].endPos.y, lights[0].endPos.z);
-    glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_direction"), lights[0].dir.x, lights[0].dir.y, lights[0].dir.z);
-    glUniform1f(glGetUniformLocation(shader.Program, "uniform_light_radius"), lights[0].radius);
+
+    for(int i = 0; i < numLights; i++)
+    {
+        std::ostringstream ss;
+        ss << "allLights[" << i << "]";
+        std::string name = ss.str();
+        glUniform3f(glGetUniformLocation(shader.Program, (name+".position").c_str()), lights[i].startPos.x, lights[i].startPos.y, lights[i].startPos.z);
+        glUniform3f(glGetUniformLocation(shader.Program, (name+".end_position").c_str()), lights[i].endPos.x, lights[i].endPos.y, lights[i].endPos.z);
+        glUniform3f(glGetUniformLocation(shader.Program, (name+".direction").c_str()), lights[i].dir.x, lights[i].dir.y, lights[i].dir.z);
+        glUniform1f(glGetUniformLocation(shader.Program, (name+".radius").c_str()), lights[i].radius);
+    }
+
 }
