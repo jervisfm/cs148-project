@@ -10,7 +10,7 @@
 
 using namespace glm;
 
-HitRecord intersectTriangle(Ray ray, Mesh &mesh, Vertex A, Vertex B, Vertex C);
+HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex B, Vertex C);
 
 void LightState::updateState()
 {
@@ -45,7 +45,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl) {
             mesh.resetTriangleIterator();
             while (mesh.nextTriangle(&A, &B, &C))
             {
-                r = intersectTriangle(ray, mesh, A, B, C);
+                r = intersectTriangle(ray, model, mesh, A, B, C);
                 if (r.t > 0.000001 && (r.t < result.t || result.t < 0.))
                 {
                     std::cout << "Intersection" << std::endl;
@@ -57,6 +57,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl) {
 
     // At the end
     if (result.t > -1.) {
+        std::cout << "(" << result.P.x << ","<< result.P.y << "," << result.P.z << ")"<<std::endl;
         LightRay lr;
         lr.startPos = dl.startPos;
         lr.endPos = result.P;
@@ -65,10 +66,13 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl) {
         {
             DirectionalLight dlReflected;
             dlReflected.dir = normalize(dl.dir - 2*(dot(dl.dir,result.normal))*result.normal);
+            std::cout << "(" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
             dlReflected.startPos = result.P+mat3(0.00001)*result.normal;
             dlReflected.radius = dl.radius;
             return ShootRay(dlReflected);
         }
+        dl.endPos = result.P;
+
         return dl;
     }
     else
@@ -77,7 +81,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl) {
     }
 }
 
-HitRecord intersectTriangle(Ray ray, Mesh &mesh, Vertex A, Vertex B, Vertex C)
+HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex B, Vertex C)
 {
     HitRecord r;
     r.t = -1.;
@@ -95,22 +99,22 @@ HitRecord intersectTriangle(Ray ray, Mesh &mesh, Vertex A, Vertex B, Vertex C)
 
     if(t < 0)
         return r;
-    //std::cout << "(" << P.x << ","<< P.y << "," << P.z << ")"<<std::endl;
+
     //std::cout << "t:"<<t<<std::endl;
 
     if(dot(cross(Bp-Ap, P-Ap), normal) >= 0 &&
        dot(cross(P-Ap, Cp-Ap), normal) >= 0 &&
        dot(cross(Cp-Bp, P-Bp), normal) >= 0)
     {
-
-        r.P = P;
+        glm::vec4 v4 = model->modelMatrix*glm::vec4(P, 1.);
+        r.P = glm::vec3(v4)/v4.w;
         r.t = t;
+        r.normal = glm::vec3(model->invTmodelMatrix*glm::vec4(normal, 0.));
         r.reflected = mesh.isMirror;
-        if (dot(r.normal, ray.d) > 0)
+        if (dot(normal, ray.d) > 0)
         {
-            normal = mat3((-1.))*normal;
+            r.normal = mat3((-1.))*normal;
         }
-        r.normal = normal;
         return r;
     }
     else
@@ -122,7 +126,11 @@ HitRecord intersectTriangle(Ray ray, Mesh &mesh, Vertex A, Vertex B, Vertex C)
 void LightState::bindLights(Shader shader) {
     // TODO : need to support more ligths, to be done after Milestone
     vector<DirectionalLight> lights = this->getDirectionalLights();
+    std::cout << "Lights start pos : " << lights[0].startPos.x<< ", " << lights[0].startPos.y << ", " << lights[0].startPos.z <<std::endl;
+    std::cout << "Lights dir : " << lights[0].dir.x<< ", " << lights[0].dir.y << ", " << lights[0].dir.z <<std::endl;
+
     glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_position"), lights[0].startPos.x, lights[0].startPos.y, lights[0].startPos.z);
+    glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_end_position"), lights[0].endPos.x, lights[0].endPos.y, lights[0].endPos.z);
     glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_direction"), lights[0].dir.x, lights[0].dir.y, lights[0].dir.z);
     glUniform1f(glGetUniformLocation(shader.Program, "uniform_light_radius"), lights[0].radius);
 }
