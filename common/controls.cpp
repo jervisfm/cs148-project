@@ -21,6 +21,7 @@ GLfloat Controls::deltaTime = 0.0f, Controls::lastFrame = 0.0f;
 bool Controls::keys[1024];
 Camera Controls::camera;
 LightState* Controls::ls;
+unsigned Controls::activeMirror = -1;
 
 void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -69,12 +70,33 @@ void Controls::Do_Movement()
     if(keys[GLFW_KEY_D])
         camera.ProcessKeyboard(RIGHT, deltaTime);
 
-    //Also, change the position of the mirror (only one for the moment)
-    if(keys[GLFW_KEY_F1])
+    // Compute the new active mirror
+    if (keys[GLFW_KEY_W] || keys[GLFW_KEY_S] || keys[GLFW_KEY_A] || keys[GLFW_KEY_D])
     {
-        Model *mirror = scene->getMirrors()[0];
+        activeMirror = -1;
+        vector<Model*> mirrors = scene->getMirrors();
+        for(int i = 0; i < mirrors.size(); i++)
+        {
+            // Compute the distance from the camera to the mirror. Do this by supposing that the center of the model
+            // is at (0,0,0)
+            glm::vec4 center4 = mirrors[i]->getModelMatrix()*glm::vec4(0.,0.,0.,1.);
+            glm::vec3 center = glm::vec3(center4)/center4.w;
+            center.y = camera.Position.y;
+            float distance = glm::distance(center, camera.Position);
+            if (distance < 5.)
+            {
+                activeMirror = i;
+            }
+        }
+    }
+
+    //Also, change the position of the mirror (only one for the moment)
+    if((keys[GLFW_KEY_F1] || keys[GLFW_KEY_F2]) && activeMirror != -1)
+    {
+        float degrees = keys[GLFW_KEY_F1] ? 3.f : -3.f;
+        Model *mirror = scene->getMirrors()[activeMirror];
         glm::mat4 mat = mirror->getModelMatrix();
-        glm::mat4 rotate = glm::rotate(glm::mat4(1.0), 3.f*deltaTime, glm::vec3(0.f, 1.0f, 0.f));
+        glm::mat4 rotate = glm::rotate(glm::mat4(1.0), degrees*deltaTime, glm::vec3(0.f, 1.0f, 0.f));
         mirror->setModelMatrix(mat*rotate);
         ls->updateState();
     }

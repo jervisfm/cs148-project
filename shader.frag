@@ -31,12 +31,12 @@ vec4 ComputeDirectionalTubeLight(Light light, vec3 frag_position, vec3 frag_norm
   vec3 surface_to_light_vector = -normalize(light.direction);
   float d = (-1)*dot(light.direction, light.position);
   float denom = dot(light.direction, light.direction);
-  float t = (-1)*(d + dot(light.direction, frag_position))/denom;
-  vec3 P = frag_position+t*light.direction;
+  float t = (d + dot(light.direction, frag_position))/denom;
+  vec3 P = frag_position-t*light.direction;
 
   float distance = length(P-light.position);
   float light_reduction_coefficient = max(0., min(1.0, 1.-pow(distance/light.radius,0.5)));
-  if (t > 0.)
+  if (t < 0.)
       light_reduction_coefficient = 0.;
   if (length(frag_position-light.end_position) > 4*light.radius)
       light_reduction_coefficient = 0.;
