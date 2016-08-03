@@ -165,7 +165,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
 
 void Model::setModelMatrix(glm::mat4 matrix) {
     this->modelMatrix = matrix;
-    this->invTmodelMatrix = glm::inverse(glm::transpose(matrix));
+    this->invTmodelMatrix = glm::transpose(glm::inverse(matrix));
 }
 
 Vertex Model::transformPoint(Vertex v)
@@ -178,8 +178,8 @@ Vertex Model::transformPoint(Vertex v)
     Position = glm::vec3(Pos4) / Pos4.w;
     P.Position = Position;
 
-    Norm4 = this->invTmodelMatrix*glm::vec4(v.Normal,1.);
-    Normal = glm::vec3(Norm4) / Norm4.w;
+    Norm4 = this->invTmodelMatrix*glm::vec4(v.Normal,0.);
+    Normal = glm::vec3(Norm4);
     P.Normal = Normal;
 
     P.TexCoords = v.TexCoords;

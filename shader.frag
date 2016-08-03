@@ -9,6 +9,7 @@ out vec4 color;
 
 uniform sampler2D texture_diffuse1;
 uniform vec3 uniform_light_position;  // center position of the light source.
+uniform vec3 uniform_light_end_position;  // center position of the light source.
 uniform vec3 uniform_light_direction; // should point towards light source.
 uniform float uniform_light_radius;   // radius of light source.
 
@@ -25,7 +26,7 @@ vec4 ComputeDirectionalLight(vec3 light_direction, float light_radius, vec3 frag
   return vec4(diffuse_light_coefficient, diffuse_light_coefficient, diffuse_light_coefficient, 1.0);
 }
 
-vec4 ComputeDirectionalTubeLight(vec3 light_position, vec3 light_direction, float light_radius, vec3 frag_position, vec3 frag_normal) {
+vec4 ComputeDirectionalTubeLight(vec3 light_position, vec3 light_end_position, vec3 light_direction, float light_radius, vec3 frag_position, vec3 frag_normal) {
   vec3 surface_to_light_vector = -normalize(light_direction);
   float d = (-1)*dot(light_direction, light_position);
   float denom = dot(light_direction, light_direction);
@@ -33,9 +34,11 @@ vec4 ComputeDirectionalTubeLight(vec3 light_position, vec3 light_direction, floa
   vec3 P = frag_position+t*light_direction;
 
   float distance = length(P-light_position);
-  float light_reduction_coefficient = max(0., min(1.0, 1.-pow(distance/light_radius,4)));
-  //if (distance > light_radius)
-  //    light_reduction_coefficient = 0.;
+  float light_reduction_coefficient = max(0., min(1.0, 1.-pow(distance/light_radius,0.5)));
+  if (t > 0.)
+      light_reduction_coefficient = 0.;
+  if (length(frag_position-light_end_position) > 1*light_radius)
+      light_reduction_coefficient = 0.;
 
 
   float diffuse_light_coefficient = light_reduction_coefficient * max(0.0, dot(normalize(Normal), surface_to_light_vector));
@@ -69,10 +72,8 @@ void main()
     //vec3 dir = vec3(0.,0.,-1.);
     //vec3 pos = vec3(0., 0., 2.);
     //vec4 directional_light_color = ComputeDirectionalLight(uniform_light_direction, uniform_light_radius, FragPos);
-    vec4 directional_light_color  = ComputeDirectionalTubeLight(uniform_light_position, uniform_light_direction, uniform_light_radius, FragPos, Normal);
+    vec4 directional_light_color  = ComputeDirectionalTubeLight(uniform_light_position,uniform_light_end_position, uniform_light_direction, uniform_light_radius, FragPos, Normal);
     //vec4 directional_light_color  = ComputeDirectionalTubeLight(pos, dir, uniform_light_radius, FragPos, Normal);
     color = diffuse_texture_color * directional_light_color;
-    //color = diffuse_texture_color;
-    //color = vec4(.0, 0.,0.,1.);
 }
 

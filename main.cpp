@@ -42,7 +42,7 @@ int main()
 
     // Draw the loaded model
     glm::mat4 model(1.);
-    model = glm::translate(model, glm::vec3(0.0f, -0.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+    model = glm::translate(model, glm::vec3(-1.f, -0.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit too big for our scene, so scale it down
     ourModel.setModelMatrix(model);
     scene->addModel(&ourModel, &shader);
@@ -61,7 +61,7 @@ int main()
     //ok, test the lightstate
     LightState ls(*scene);
     DirectionalLight dl;
-    dl.dir = glm::vec3(-2.,0.,0.);
+    dl.dir = glm::vec3(-1.,0.,0.);
     dl.startPos = glm::vec3(0., 0.0, 2.);
     dl.radius = 0.55;
     ls.addPrimaryLight(dl);
@@ -69,7 +69,7 @@ int main()
     Model sphere("sphere.obj");
     //sphere.meshes[0].isMirror = true;
     glm::mat4 model3(1.);
-    model3 = glm::translate(model3, dl.startPos);
+    model3 = glm::translate(model3, glm::vec3(-0.914908, 1.25379e-12, 1.99999));
     model3 = glm::scale(model3, glm::vec3(0.2f, 0.2f, 0.2f));
     sphere.setModelMatrix(model3);
     scene->addModel(&sphere, &shader);
@@ -77,10 +77,10 @@ int main()
     Model sphere2("sphere.obj");
     //sphere.meshes[0].isMirror = true;
     glm::mat4 model4(1.);
-    model4 = glm::translate(model4, dl.startPos+dl.dir);
+    model4 = glm::translate(model4,glm::vec3(-0.671641,3.57628e-07,0.384418));
     model4 = glm::scale(model4, glm::vec3(0.1f, 0.1f, 0.1f));
     sphere2.setModelMatrix(model4);
-    scene->addModel(&sphere2, &shader);
+    //scene->addModel(&sphere2, &shader);
 
 
 
