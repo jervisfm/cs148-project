@@ -66,11 +66,11 @@ vec4 ComputeSpotLight(vec3 light_position, vec3 light_direction, vec3 light_cone
 void main()
 {
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
-    vec3 dir = vec3(0.,0.,-1.);
-    vec3 pos = vec3(0., 0., 2.);
+    //vec3 dir = vec3(0.,0.,-1.);
+    //vec3 pos = vec3(0., 0., 2.);
     //vec4 directional_light_color = ComputeDirectionalLight(uniform_light_direction, uniform_light_radius, FragPos);
-    //vec4 directional_light_color  = ComputeDirectionalTubeLight(uniform_light_position, uniform_light_direction, uniform_light_radius, FragPos, Normal);
-    vec4 directional_light_color  = ComputeDirectionalTubeLight(pos, dir, uniform_light_radius, FragPos, Normal);
+    vec4 directional_light_color  = ComputeDirectionalTubeLight(uniform_light_position, uniform_light_direction, uniform_light_radius, FragPos, Normal);
+    //vec4 directional_light_color  = ComputeDirectionalTubeLight(pos, dir, uniform_light_radius, FragPos, Normal);
     color = diffuse_texture_color * directional_light_color;
     //color = diffuse_texture_color;
     //color = vec4(.0, 0.,0.,1.);

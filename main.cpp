@@ -50,10 +50,10 @@ int main()
     Model mirror("mirror1.obj");
     mirror.meshes[0].isMirror = true;
     glm::mat4 model2(1.);
-    model2 = glm::translate(model2, glm::vec3(-0.5f, -0.25f, 2.f));
-    model2 = glm::scale(model2, glm::vec3(0.5f, 0.5f, 0.5f));
+    model2 = glm::translate(model2, glm::vec3(-1.f, -0.25f, 2.f));
+    model2 = glm::scale(model2, glm::vec3(1.f, 1.f, 1.f));
     mirror.setModelMatrix(model2);
-    //scene->addModel(&mirror, &shader);
+    scene->addModel(&mirror, &shader);
 
 
     // Draw in wireframe
@@ -61,7 +61,7 @@ int main()
     //ok, test the lightstate
     LightState ls(*scene);
     DirectionalLight dl;
-    dl.dir = glm::vec3(0.,0.,-1.);
+    dl.dir = glm::vec3(-2.,0.,0.);
     dl.startPos = glm::vec3(0., 0.0, 2.);
     dl.radius = 0.55;
     ls.addPrimaryLight(dl);
