@@ -31,7 +31,7 @@ struct Ray {
 class LightState
 {
 public:
-    LightState(Scene &s) : scene(s) {}
+    LightState(Scene* s) : scene(s) {}
 
     std::vector<LightRay> getLightRays() {
         return this->lightRays;
@@ -52,7 +52,7 @@ public:
     std::vector<DirectionalLight> primaryLights;
 
 private:
-    Scene scene;
+    Scene* scene;
     std::vector<LightRay> lightRays;
     std::vector<DirectionalLight> directionalLights;
 

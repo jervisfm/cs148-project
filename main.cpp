@@ -38,10 +38,6 @@ int main()
     Scene* scene = new Scene();
 
 
-
-
-    // Initialize controls
-    Controls::init(window, scene, glm::vec3(0.f,0.f,3.f));
     // Load models
     //Model ourModel("nanosuit/nanosuit.obj");
     Model ourModel("pyramid_model/pyramid.obj");
@@ -56,6 +52,7 @@ int main()
     Model mirror("mirror1.obj");
     mirror.meshes[0].isMirror = true;
     glm::mat4 model2(1.);
+    //model2 = glm::rotate(model2, 90.f, glm::vec3(0.f, 1.f, 0.f));
     model2 = glm::translate(model2, glm::vec3(-1.f, -0.25f, 2.f));
     model2 = glm::scale(model2, glm::vec3(1.f, 1.f, 1.f));
     mirror.setModelMatrix(model2);
@@ -66,13 +63,8 @@ int main()
     // Draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //ok, test the lightstate
-    LightState ls(*scene);
-    DirectionalLight dl;
-    dl.dir = glm::vec3(-1.,0.,0.);
-    dl.startPos = glm::vec3(0., 0.0, 2.);
-    dl.radius = 0.55;
-    ls.addPrimaryLight(dl);
-    //ls.updateState();
+
+    //ls->updateState();
 
     Model sphere("sphere.obj");
     //sphere.meshes[0].isMirror = true;
@@ -80,7 +72,7 @@ int main()
     model3 = glm::translate(model3, glm::vec3(-0.914908, 1.25379e-12, 1.99999));
     model3 = glm::scale(model3, glm::vec3(0.2f, 0.2f, 0.2f));
     sphere.setModelMatrix(model3);
-    scene->addModel(&sphere, &shader);
+    //scene->addModel(&sphere, &shader);
 
     Model sphere2("sphere.obj");
     //sphere.meshes[0].isMirror = true;
@@ -90,10 +82,19 @@ int main()
     sphere2.setModelMatrix(model4);
     //scene->addModel(&sphere2, &shader);
 
+    LightState* ls = new LightState(scene);
+    DirectionalLight dl;
+    dl.dir = glm::vec3(-1.,0.,0.);
+    dl.startPos = glm::vec3(0., 0.0, 2.);
+    dl.radius = 0.55;
+    ls->addPrimaryLight(dl);
 
+
+    // Initialize controls
+    Controls::init(window, scene, ls, glm::vec3(0.f,0.f,3.f));
 
     // Needs only to be called if the geometry changed, or if lights are added !
-    ls.updateState();
+    ls->updateState();
 
     //Iterate over all triangles.
     /*Vertex A, B, C;
@@ -107,9 +108,9 @@ int main()
     while(!glfwWindowShouldClose(window))
     {
         shader.Use();
-        //ls.updateState();
+        //ls->updateState();
         //bind the lights
-        ls.bindLights(shader);
+        ls->bindLights(shader);
 
         //Update the view and projection matrices
         Controls::updateState(shader);

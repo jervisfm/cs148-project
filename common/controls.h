@@ -12,11 +12,11 @@
 
 class Controls {
 public:
-    static void init(GLFWwindow* w, Scene* s/*, LightState* ls*/, glm::vec3 initPos){
+    static void init(GLFWwindow* w, Scene* s, LightState* ls, glm::vec3 initPos){
         camera  = Camera(initPos);
         window = w;
         scene = s;
-        //Controls::ls = ls;
+        Controls::ls = ls;
         glfwSetKeyCallback(window, Controls::key_callback);
         glfwSetCursorPosCallback(window, Controls::mouse_callback);
         glfwSetScrollCallback(window, Controls::scroll_callback);
@@ -40,7 +40,7 @@ private:
     static bool keys[1024];
     static GLuint screenWidth, screenHeight;
     static Scene* scene;
-    //static LightState* ls;
+    static LightState* ls;
 
 };
 

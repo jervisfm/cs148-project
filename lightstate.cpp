@@ -27,10 +27,10 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
     HitRecord result, r;
     result.t = -1;
     std::cout << "Shooting ray" << std::endl;
-    unsigned nModels = this->scene.models.size();
+    unsigned nModels = this->scene->models.size();
     for (int i = 0; i < nModels; i++)
     {
-        Model* model = this->scene.models[i].m;
+        Model* model = this->scene->models[i].m;
         mat4 invM = transpose(model->invTmodelMatrix);
         vec4 op = invM*(vec4(dl.startPos, 1.));
         vec3 o = vec3(op)/op.w;
@@ -48,7 +48,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
                 r = intersectTriangle(ray, model, mesh, A, B, C);
                 if (r.t > 0.000001 && (r.t < result.t || result.t < 0.))
                 {
-                    std::cout << "Intersection" << std::endl;
+                    //std::cout << "Intersection" << std::endl;
                     result = r;
                 }
             }
@@ -57,7 +57,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
 
     // At the end
     if (result.t > -1.) {
-        std::cout << "(" << result.P.x << ","<< result.P.y << "," << result.P.z << ")"<<std::endl;
+        //std::cout << "(" << result.P.x << ","<< result.P.y << "," << result.P.z << ")"<<std::endl;
         LightRay lr;
         lr.startPos = dl.startPos;
         lr.endPos = result.P;
@@ -66,7 +66,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
         {
             DirectionalLight dlReflected;
             dlReflected.dir = normalize(dl.dir - 2*(dot(dl.dir,result.normal))*result.normal);
-            std::cout << "(" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
+            //std::cout << "Reflected direction : (" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
             dlReflected.startPos = result.P+mat3(0.00001)*result.normal;
             dlReflected.radius = dl.radius;
             return ShootRay(dlReflected, depth+1);

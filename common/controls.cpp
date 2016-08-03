@@ -20,7 +20,7 @@ GLuint Controls::screenWidth = 800, Controls::screenHeight = 600;
 GLfloat Controls::deltaTime = 0.0f, Controls::lastFrame = 0.0f;
 bool Controls::keys[1024];
 Camera Controls::camera;
-//LightState* Controls::ls;
+LightState* Controls::ls;
 
 void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -76,7 +76,7 @@ void Controls::Do_Movement()
         glm::mat4 mat = mirror->getModelMatrix();
         glm::mat4 rotate = glm::rotate(glm::mat4(1.0), 3.f*deltaTime, glm::vec3(0.f, 1.0f, 0.f));
         mirror->setModelMatrix(mat*rotate);
-        //ls->updateState();
+        ls->updateState();
     }
 }
 
