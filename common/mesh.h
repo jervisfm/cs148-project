@@ -20,6 +20,12 @@
 #include <assimp/postprocess.h>
 
 using namespace std;
+struct Material {
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shininess;
+};
 
 struct Vertex {
     glm::vec3 Position;
@@ -52,6 +58,7 @@ class Mesh {
         bool nextTriangle(Vertex*, Vertex*, Vertex*);
         void resetTriangleIterator() { indexIndex = 0; }
         bool isMirror=false;
+        Material material;
     private:
         /*  Render data  */
         GLuint VAO, VBO, EBO;

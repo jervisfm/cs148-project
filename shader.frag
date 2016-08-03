@@ -25,6 +25,13 @@ uniform struct Light {
     float radius;
 } allLights[MAX_LIGHTS];
 
+uniform struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+} material;
+
 // Implementation of directional + spot lighting based on tutorial at:
 // http://www.tomdalling.com/blog/modern-opengl/08-even-more-lighting-directional-lights-spotlights-multiple-lights/
 vec4 ComputeDirectionalTubeLight(Light light, vec3 frag_position, vec3 frag_normal) {
@@ -76,6 +83,6 @@ void main()
     {
         illuminance += ComputeDirectionalTubeLight(allLights[i], FragPos, Normal);
     }
-    color = diffuse_texture_color * illuminance;
+    color = diffuse_texture_color * illuminance + vec4(material.ambient, 1.);
 }
 

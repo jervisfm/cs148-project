@@ -41,7 +41,7 @@ private:
     static GLuint screenWidth, screenHeight;
     static Scene* scene;
     static LightState* ls;
-    static unsigned activeMirror;
+    static int activeMirror;
 
 };
 

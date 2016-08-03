@@ -26,7 +26,7 @@ void LightState::updateState()
 DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
     HitRecord result, r;
     result.t = -1;
-    std::cout << "Shooting ray" << std::endl;
+    //std::cout << "Shooting ray" << std::endl;
     unsigned nModels = this->scene->models.size();
     for (int i = 0; i < nModels; i++)
     {

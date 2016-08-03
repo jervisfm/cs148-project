@@ -10,6 +10,11 @@ Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> text
 
     this->setupMesh();
     this->boundingBox = this->computeAABB();
+
+    material.ambient = glm::vec3(0.);
+    material.diffuse = glm::vec3(0.);
+    material.specular = glm::vec3(0.);
+    material.shininess = 0.f;
 }
 
 void Mesh::setupMesh()
@@ -65,6 +70,7 @@ void Mesh::Draw(Shader shader)
         glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
     }
     glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
+    glUniform3fv(glGetUniformLocation(shader.Program, "material.ambient"),1, glm::value_ptr(this->material.ambient));
 
     // Draw mesh
     glBindVertexArray(this->VAO);

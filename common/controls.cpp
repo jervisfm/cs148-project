@@ -21,7 +21,7 @@ GLfloat Controls::deltaTime = 0.0f, Controls::lastFrame = 0.0f;
 bool Controls::keys[1024];
 Camera Controls::camera;
 LightState* Controls::ls;
-unsigned Controls::activeMirror = -1;
+int Controls::activeMirror = -1;
 
 void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -73,7 +73,7 @@ void Controls::Do_Movement()
     // Compute the new active mirror
     if (keys[GLFW_KEY_W] || keys[GLFW_KEY_S] || keys[GLFW_KEY_A] || keys[GLFW_KEY_D])
     {
-        activeMirror = -1;
+        int newActiveMirror = -1;
         vector<Model*> mirrors = scene->getMirrors();
         for(int i = 0; i < mirrors.size(); i++)
         {
@@ -85,9 +85,23 @@ void Controls::Do_Movement()
             float distance = glm::distance(center, camera.Position);
             if (distance < 5.)
             {
-                activeMirror = i;
+                newActiveMirror = i;
             }
         }
+
+        if (newActiveMirror != activeMirror) { //something changed
+            if (activeMirror != -1)
+            {
+                mirrors[activeMirror]->meshes[0].material.ambient = glm::vec3(0.,0.,0.);
+            }
+            if (newActiveMirror != -1)
+            {
+                mirrors[newActiveMirror]->meshes[0].material.ambient = glm::vec3(.5,0.5,0.5);
+            }
+        }
+
+        activeMirror = newActiveMirror;
+
     }
 
     //Also, change the position of the mirror (only one for the moment)
