@@ -12,18 +12,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-bool keys[1024];
-GLfloat lastX = 400, lastY = 300;
-bool firstMouse = true;
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-GLfloat deltaTime = 0.0f;
-GLfloat lastFrame = 0.0f;
+GLfloat Controls::lastX = 400, Controls::lastY = 300;
+GLFWwindow* Controls::window;
+Scene* Controls::scene;
+bool Controls::firstMouse = true;
+GLuint Controls::screenWidth = 800, Controls::screenHeight = 600;
+GLfloat Controls::deltaTime = 0.0f, Controls::lastFrame = 0.0f;
+bool Controls::keys[1024];
+Camera Controls::camera;
+//LightState* Controls::ls;
 
-// Properties
-GLuint screenWidth = 800, screenHeight = 600;
-
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -34,7 +33,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         keys[key] = false;
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void Controls::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if(firstMouse)
     {
@@ -52,13 +51,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void Controls::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
 
 // Moves/alters the camera positions based on user input
-void Do_Movement()
+void Controls::Do_Movement()
 {
     // Camera controls
     if(keys[GLFW_KEY_W])
@@ -69,9 +68,19 @@ void Do_Movement()
         camera.ProcessKeyboard(LEFT, deltaTime);
     if(keys[GLFW_KEY_D])
         camera.ProcessKeyboard(RIGHT, deltaTime);
+
+    //Also, change the position of the mirror (only one for the moment)
+    if(keys[GLFW_KEY_F1])
+    {
+        Model *mirror = scene->getMirrors()[0];
+        glm::mat4 mat = mirror->getModelMatrix();
+        glm::mat4 rotate = glm::rotate(glm::mat4(1.0), 3.f*deltaTime, glm::vec3(0.f, 1.0f, 0.f));
+        mirror->setModelMatrix(mat*rotate);
+        //ls->updateState();
+    }
 }
 
-void updateState(Shader shader){
+void Controls::updateState(Shader shader){
     // Set frame time
     GLfloat currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
@@ -89,7 +98,7 @@ void updateState(Shader shader){
     glfwPollEvents();
 }
 
-Camera getCamera()
+Camera Controls::getCamera()
 {
     return camera;
 }

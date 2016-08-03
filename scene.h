@@ -27,8 +27,11 @@ public:
     void drawScene();
     bool nextTriangle(Vertex*, Vertex*, Vertex*);
     void resetTriangleIterator();
+    void addMirror(Model *m);
+    vector<Model*> getMirrors();
 private:
     unsigned modelIndex=0, meshIndex=0, indexIndex=0;
+    vector<Model*> mirrors;
 };
 
 #endif // SCENE_H

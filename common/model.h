@@ -30,9 +30,12 @@ class Model
         }
         void Draw(Shader shader);
         void setModelMatrix(glm::mat4 matrix);
-
+        glm::mat4 getModelMatrix() {
+            return this->modelMatrix;
+        }
         // Transforms the position and the normal according to the model matrix
         Vertex transformPoint(Vertex);
+
 
         vector<Mesh> meshes;
         glm::mat4 modelMatrix;

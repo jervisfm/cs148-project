@@ -36,9 +36,6 @@ GLFWwindow* initWindow(int width, int height)
 
     glViewport(0, 0, w, h);
 
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 

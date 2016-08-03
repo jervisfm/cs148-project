@@ -53,3 +53,11 @@ bool Scene::nextTriangle(Vertex *A, Vertex *B, Vertex *C) {
 void Scene::resetTriangleIterator() {
     indexIndex = meshIndex = modelIndex = 0; // reset the iterator
 }
+
+void Scene::addMirror(Model *m) {
+    this->mirrors.push_back(m);
+}
+
+vector<Model*> Scene::getMirrors() {
+    return this->mirrors;
+}

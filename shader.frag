@@ -37,7 +37,7 @@ vec4 ComputeDirectionalTubeLight(vec3 light_position, vec3 light_end_position, v
   float light_reduction_coefficient = max(0., min(1.0, 1.-pow(distance/light_radius,0.5)));
   if (t > 0.)
       light_reduction_coefficient = 0.;
-  if (length(frag_position-light_end_position) > 1*light_radius)
+  if (length(frag_position-light_end_position) > 4*light_radius)
       light_reduction_coefficient = 0.;
 
 

@@ -18,12 +18,12 @@ void LightState::updateState()
     this->lightRays.clear();
     DirectionalLight dl;
     for (int i = 0; i < this->primaryLights.size(); i++) {
-        dl = this->ShootRay(this->primaryLights[i]);
+        dl = this->ShootRay(this->primaryLights[i], 0);
         this->directionalLights.push_back(dl);
     }
 }
 
-DirectionalLight LightState::ShootRay(DirectionalLight dl) {
+DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
     HitRecord result, r;
     result.t = -1;
     std::cout << "Shooting ray" << std::endl;
@@ -62,14 +62,14 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl) {
         lr.startPos = dl.startPos;
         lr.endPos = result.P;
         this->lightRays.push_back(lr);
-        if (result.reflected)
+        if (result.reflected && depth < 6)
         {
             DirectionalLight dlReflected;
             dlReflected.dir = normalize(dl.dir - 2*(dot(dl.dir,result.normal))*result.normal);
             std::cout << "(" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
             dlReflected.startPos = result.P+mat3(0.00001)*result.normal;
             dlReflected.radius = dl.radius;
-            return ShootRay(dlReflected);
+            return ShootRay(dlReflected, depth+1);
         }
         dl.endPos = result.P;
 
@@ -126,8 +126,8 @@ HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex 
 void LightState::bindLights(Shader shader) {
     // TODO : need to support more ligths, to be done after Milestone
     vector<DirectionalLight> lights = this->getDirectionalLights();
-    std::cout << "Lights start pos : " << lights[0].startPos.x<< ", " << lights[0].startPos.y << ", " << lights[0].startPos.z <<std::endl;
-    std::cout << "Lights dir : " << lights[0].dir.x<< ", " << lights[0].dir.y << ", " << lights[0].dir.z <<std::endl;
+    //std::cout << "Lights start pos : " << lights[0].startPos.x<< ", " << lights[0].startPos.y << ", " << lights[0].startPos.z <<std::endl;
+    //std::cout << "Lights dir : " << lights[0].dir.x<< ", " << lights[0].dir.y << ", " << lights[0].dir.z <<std::endl;
 
     glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_position"), lights[0].startPos.x, lights[0].startPos.y, lights[0].startPos.z);
     glUniform3f(glGetUniformLocation(shader.Program, "uniform_light_end_position"), lights[0].endPos.x, lights[0].endPos.y, lights[0].endPos.z);

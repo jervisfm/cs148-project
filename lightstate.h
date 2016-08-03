@@ -56,7 +56,7 @@ private:
     std::vector<LightRay> lightRays;
     std::vector<DirectionalLight> directionalLights;
 
-    DirectionalLight ShootRay(DirectionalLight dl);
+    DirectionalLight ShootRay(DirectionalLight dl, unsigned depth);
 };
 
 #endif // LIGHTSTATE_H

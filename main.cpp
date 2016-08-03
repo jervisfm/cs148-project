@@ -36,6 +36,12 @@ int main()
     // Setup and compile our shaders
     Shader shader("shader.vs", "shader.frag");
     Scene* scene = new Scene();
+
+
+
+
+    // Initialize controls
+    Controls::init(window, scene, glm::vec3(0.f,0.f,3.f));
     // Load models
     //Model ourModel("nanosuit/nanosuit.obj");
     Model ourModel("pyramid_model/pyramid.obj");
@@ -54,6 +60,7 @@ int main()
     model2 = glm::scale(model2, glm::vec3(1.f, 1.f, 1.f));
     mirror.setModelMatrix(model2);
     scene->addModel(&mirror, &shader);
+    scene->addMirror(&mirror);
 
 
     // Draw in wireframe
@@ -65,6 +72,7 @@ int main()
     dl.startPos = glm::vec3(0., 0.0, 2.);
     dl.radius = 0.55;
     ls.addPrimaryLight(dl);
+    //ls.updateState();
 
     Model sphere("sphere.obj");
     //sphere.meshes[0].isMirror = true;
@@ -99,14 +107,15 @@ int main()
     while(!glfwWindowShouldClose(window))
     {
         shader.Use();
+        //ls.updateState();
         //bind the lights
         ls.bindLights(shader);
 
         //Update the view and projection matrices
-        updateState(shader);
+        Controls::updateState(shader);
 
         // Move the camera
-        Do_Movement();
+        Controls::Do_Movement();
 
 
         scene->drawScene();
