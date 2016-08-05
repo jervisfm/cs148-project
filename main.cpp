@@ -47,7 +47,7 @@ int main()
     model = glm::translate(model, glm::vec3(-1.f, -0.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit too big for our scene, so scale it down
     ourModel.setModelMatrix(model);
-    scene->addModel(&ourModel, &shader);
+    //scene->addModel(&ourModel, &shader);
 
     Model mirror("mirror1.obj");
     mirror.meshes[0].isMirror = true;
@@ -56,8 +56,11 @@ int main()
     model2 = glm::translate(model2, glm::vec3(-1.f, -0.25f, 2.f));
     model2 = glm::scale(model2, glm::vec3(1.f, 1.f, 1.f));
     mirror.setModelMatrix(model2);
-    scene->addModel(&mirror, &shader);
-    scene->addMirror(&mirror);
+    //scene->addModel(mirror, &shader);
+    //scene->addMirror(&mirror);
+
+    scene->loadMap("map001.map", &shader);
+    scene->loadMirrors("map001_mirrors.map", &shader);
 
 
     // Draw in wireframe

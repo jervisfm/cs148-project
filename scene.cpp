@@ -1,4 +1,5 @@
 #include "scene.h"
+#include <stdio.h>
 
 using namespace std;
 void Scene::drawScene() {
@@ -60,4 +61,58 @@ void Scene::addMirror(Model *m) {
 
 vector<Model*> Scene::getMirrors() {
     return this->mirrors;
+}
+
+void Scene::loadMap(const char* filename, Shader *s) {
+    FILE *pFile;
+    pFile = fopen(filename, "r");
+    if (pFile == (void*)0) return;
+
+    char objPath[255];
+    glm::vec3 pos, scale, rot;
+    float degrees;
+    while( fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
+                     objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
+                     &rot.x, &rot.y, &rot.z, &degrees) >0)
+    {
+        //cout << objPath << " " << scale.z << endl;
+        glm::mat4 m(1.0);
+        m = glm::scale(m, scale);
+        m = glm::rotate(m, degrees, rot);
+        m = glm::translate(m, pos);
+        Model* model = new Model(objPath);
+        model->setModelMatrix(m);
+        this->addModel(model, s);
+    }
+
+    fclose(pFile);
+}
+
+void Scene::loadMirrors(const char *filename, Shader* s)
+{
+    FILE *pFile;
+    pFile = fopen(filename, "r");
+    if (pFile == (void*)0) return;
+
+    char objPath[255];
+    glm::vec3 pos, scale, rot;
+    float degrees;
+    while( fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
+                     objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
+                     &rot.x, &rot.y, &rot.z, &degrees) >0)
+    {
+        //cout << objPath << " " << scale.z << endl;
+        glm::mat4 m(1.0);
+        m = glm::scale(m, scale);
+        m = glm::rotate(m, degrees, rot);
+        m = glm::translate(m, pos);
+        Model* model = new Model(objPath);
+        model->meshes[0].isMirror = true;
+        model->setModelMatrix(m);
+        this->addModel(model, s);
+        this->addMirror(model);
+        //cout << "Mirror addr: " << model << endl;
+    }
+
+    fclose(pFile);
 }
