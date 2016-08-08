@@ -31,6 +31,10 @@ For your convenience, copies of the above third party libraries are also availab
 ### Pyramid Model Close up
 ![example_image_2](images/pyramid_model2.png)
 
+### Mummy Model loaded
+![example_image_3](images/mummy_model.png)
+
+
 ## TODO
 * Update pyramid texture to use more realistic bricks instead of the placeholder wooden texture.
 
