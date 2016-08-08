@@ -76,6 +76,11 @@ void Scene::loadMap(const char* filename, Shader *s) {
                      objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
                      &rot.x, &rot.y, &rot.z, &degrees) > 0)
     {
+        // Skip over any lines in the map file that start with #
+        if (objPath[0] == '#') {
+            continue;
+        }
+
         loadOptions lOptions;
         lOptions.position = pos;
         lOptions.scale = scale;
