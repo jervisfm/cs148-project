@@ -45,11 +45,13 @@ vec4 ComputeDirectionalTubeLight(Light light, vec3 frag_position, vec3 frag_norm
   float light_reduction_coefficient = max(0., min(1.0, 1.-pow(distance/light.radius,0.5)));
   if (t < 0.)
       light_reduction_coefficient = 0.;
-  if (length(frag_position-light.end_position) > 4*light.radius)
+  if (length(frag_position-light.end_position) > 3*light.radius)
+      light_reduction_coefficient = 0.;
+  if(dot(P-frag_position, light.direction) > 0.)
       light_reduction_coefficient = 0.;
 
 
-  float diffuse_light_coefficient = light_reduction_coefficient * max(0.0, dot(normalize(Normal), surface_to_light_vector));
+  float diffuse_light_coefficient = light_reduction_coefficient ;//* max(0.0, dot(normalize(Normal), surface_to_light_vector));
   return vec4(diffuse_light_coefficient, diffuse_light_coefficient, diffuse_light_coefficient, 1.0);
 }
 
@@ -78,16 +80,16 @@ void main()
 {
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
 
-    vec4 illuminance = vec4(0.);
+    vec4 illuminance = vec4(0.01);
     vec4 ambient = vec4(0);
     for(int i = 0; i < numLights; ++i)
     {
         illuminance += ComputeDirectionalTubeLight(allLights[i], FragPos, Normal);
-        //if (length(FragPos - allLights[i].position) < allLights[i].radius)
-        //{
-        //   ambient += vec4(0.3,0.3,0.3,1);
+       //if (length(FragPos - allLights[i].position) < allLights[i].radius)
+       //{
+       //   illuminance += vec4(0.3,0.3,0.3,1);
        //}
     }
-    color = diffuse_texture_color /* illuminance*/ + vec4(material.ambient, 1.) + ambient;
+    color = diffuse_texture_color * illuminance + vec4(material.ambient, 1.) + ambient;
 }
 
