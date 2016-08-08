@@ -48,3 +48,4 @@ The following resources were consulted in the completion of this assignment:
 * How to apply textures in blender: https://www.youtube.com/watch?v=6gRUUeFteQg
 * Project starter code with model loading: http://www.learnopengl.com/#!Model-Loading/Model
 * Directional lighting / Spot lighting tutorial: http://www.tomdalling.com/blog/modern-opengl/08-even-more-lighting-directional-lights-spotlights-multiple-lights/
+* Egypt mummy model: https://www.yobi3d.com/v/fxSiYKDNWJ/mummy.obj/3d%20model%20free%20mummy
