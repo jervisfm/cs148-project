@@ -26,6 +26,13 @@ public:
     static void Do_Movement();
     static void updateState(Shader shader);
     static Camera getCamera();
+    static Model* getActiveMirror() {
+        if (Controls::activeMirror > -1)
+            return Controls::scene->getMirrors()[Controls::activeMirror];
+        else
+            return nullptr;
+    }
+    static void drawBorders(Shader);
 private:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);

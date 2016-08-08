@@ -3,6 +3,8 @@
 
 using namespace std;
 void Scene::drawScene() {
+    // Draw the scene, update the stencil buffer
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
     for (int i = 0; i < models.size(); i++) {
         SceneElement se = models[i];
         se.m->Draw(*(se.shader));

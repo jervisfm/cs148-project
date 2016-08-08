@@ -88,6 +88,6 @@ void main()
         //   ambient += vec4(0.3,0.3,0.3,1);
        //}
     }
-    color = diffuse_texture_color * illuminance + vec4(material.ambient, 1.) + ambient;
+    color = diffuse_texture_color /* illuminance*/ + vec4(material.ambient, 1.) + ambient;
 }
 

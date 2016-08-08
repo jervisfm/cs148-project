@@ -35,6 +35,7 @@ int main()
 
     // Setup and compile our shaders
     Shader shader("shader.vs", "shader.frag");
+    Shader borderShader("shader.vs", "bordershader.frag");
     Scene* scene = new Scene();
 
 
@@ -100,13 +101,6 @@ int main()
     ls->updateState();
 
     //Iterate over all triangles.
-    /*Vertex A, B, C;
-    while(scene->nextTriangle(&A, &B, &C))
-    {
-        cout << "A : " << A.Position[0] << ", " << A.Position[1] << ", " << A.Position[2] << "; " <<
-                "B : " << B.Position[0] << ", " << B.Position[1] << ", " << B.Position[2] << "; " <<
-                "C : " << C.Position[0] << ", " << C.Position[1] << ", " << C.Position[2] << endl;
-    }*/
     // Game loop
     while(!glfwWindowShouldClose(window))
     {
@@ -117,12 +111,18 @@ int main()
 
         //Update the view and projection matrices
         Controls::updateState(shader);
+        borderShader.Use();
+        Controls::updateState(borderShader);
 
         // Move the camera
         Controls::Do_Movement();
 
-
+        shader.Use();
         scene->drawScene();
+
+        Controls::drawBorders(borderShader);
+
+
         // Swap the buffers
         glfwSwapBuffers(window);
     }

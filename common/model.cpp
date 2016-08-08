@@ -1,4 +1,5 @@
 #include "model.h"
+#include "controls.h"
 #include <SOIL.h>
 #include <iostream>
 using namespace std;
@@ -29,6 +30,11 @@ GLint TextureFromFile(const char* path, string directory)
 
 void Model::Draw(Shader shader)
 {
+    if (Controls::getActiveMirror() == this)
+        glStencilMask(0xFF);
+    else
+        glStencilMask(0x00);
+
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
     for(GLuint i = 0; i < this->meshes.size(); i++)
         this->meshes[i].Draw(shader);

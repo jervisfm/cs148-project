@@ -113,7 +113,7 @@ void Controls::Do_Movement()
             }
         }
 
-        if (newActiveMirror != activeMirror) { //something changed
+        /*if (newActiveMirror != activeMirror) { //something changed
             if (activeMirror != -1)
             {
                 mirrors[activeMirror]->meshes[0].material.ambient = glm::vec3(0.,0.,0.);
@@ -122,7 +122,7 @@ void Controls::Do_Movement()
             {
                 mirrors[newActiveMirror]->meshes[0].material.ambient = glm::vec3(.5,0.5,0.5);
             }
-        }
+        }*/
 
         activeMirror = newActiveMirror;
 
@@ -205,9 +205,32 @@ void Controls::updateState(Shader shader){
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
     // Clear the colorbuffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // Check and call events
     glfwPollEvents();
+}
+
+void Controls::drawBorders(Shader borderShader) {
+    //Now, draw the border - if necessary
+    if (Controls::getActiveMirror() != nullptr)
+    {
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilMask(0x00);
+        glDisable(GL_DEPTH_TEST);
+        borderShader.Use();
+        float scale = 1.08;
+        Model* mirror = Controls::getActiveMirror();
+        glm::mat4 oldModel = mirror->getModelMatrix();
+        glm::mat3 linearMatrix = glm::mat3(scale)* glm::mat3(oldModel);
+        glm::mat4 newModel = glm::translate(glm::mat4(linearMatrix), glm::inverse(linearMatrix)*mirror->lOptions.position);
+
+        mirror->setModelMatrix(newModel);
+
+        mirror->Draw(borderShader);
+        mirror->setModelMatrix(oldModel);
+        glStencilMask(0xFF);
+        glEnable(GL_DEPTH_TEST);
+    }
 }
 
 Camera Controls::getCamera()
