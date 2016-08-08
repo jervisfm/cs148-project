@@ -126,7 +126,22 @@ int main()
         // Swap the buffers
         glfwSwapBuffers(window);
     }
-
+    //Output new maps
+    std::cout << "Object map : " << std::endl;
+    for (int i = 0; i < scene->models.size(); i++)
+    {
+        Model *m = scene->models[i].m;
+        if (!m->hasMirror)
+        {
+            std::cout << m->genMapDirective() << std::endl;
+        }
+    }
+    // And the mirrors
+    std::cout << "==================" << std::endl << "Mirror map :" << std::endl;
+    std::vector<Model*> mirrors = scene->getMirrors();
+    for (int i = 0; i < mirrors.size(); i++) {
+        std::cout << mirrors[i]->genMapDirective() << std::endl;
+    }
     glfwTerminate();
     return 0;
 }

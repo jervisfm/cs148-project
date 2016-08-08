@@ -79,7 +79,7 @@ void Controls::Do_Movement()
     if(keys[GLFW_KEY_E] && !modelSelected) { // Toggle edit mode
         editMode = !editMode;
         keys[GLFW_KEY_E] = false;
-        std::cout << "Pressed E !"<<std::endl;
+        //std::cout << "Pressed E !"<<std::endl;
         if(!editMode)
         {
             if (activeEditing != -1)
@@ -94,13 +94,13 @@ void Controls::Do_Movement()
     {
         modelSelected = !modelSelected;
         keys[GLFW_KEY_ENTER] = false;
-        std::cout << "Pressed Enter !"<<std::endl;
+        //std::cout << "Pressed Enter !"<<std::endl;
     }
 
     // Compute the new active mirror, and active object
     if (keys[GLFW_KEY_W] || keys[GLFW_KEY_S] || keys[GLFW_KEY_A] || keys[GLFW_KEY_D])
     {
-        std::cout << "Current position : (" << camera.Position.x << ", "<< camera.Position.y<< ", "<< camera.Position.z << ")" << std::endl;
+        //std::cout << "Current position : (" << camera.Position.x << ", "<< camera.Position.y<< ", "<< camera.Position.z << ")" << std::endl;
         int newActiveMirror = -1;
         vector<Model*> mirrors = scene->getMirrors();
         for(int i = 0; i < mirrors.size(); i++)
@@ -165,7 +165,7 @@ void Controls::Do_Movement()
             mat = glm::translate(mat, corrDisplacement);
             models[activeEditing].m->setModelMatrix(mat);
             models[activeEditing].m->lOptions.position += displacement;
-            std::cout << models[activeEditing].m->genMapDirective();
+            //std::cout << models[activeEditing].m->genMapDirective();
         }
 
 
