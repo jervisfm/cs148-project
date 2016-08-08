@@ -89,7 +89,7 @@ int main()
     DirectionalLight dl;
     dl.dir = glm::vec3(-1.,0.,0.);
     dl.startPos = glm::vec3(0., 0.0, 2.);
-    dl.radius = 0.55;
+    dl.radius = 4.55;
     ls->addPrimaryLight(dl);
 
 

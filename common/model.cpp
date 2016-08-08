@@ -186,3 +186,13 @@ Vertex Model::transformPoint(Vertex v)
 
     return P;
 }
+
+glm::mat4 Model::getLoadedMatrix() {
+    glm::mat4 m(1.0);
+    m = glm::scale(m, this->lOptions.scale);
+    m = glm::rotate(m, this->lOptions.rotDegrees, this->lOptions.rotAxis);
+    glm::vec4 displacement = glm::inverse(m)*glm::vec4(this->lOptions.position, 1.);
+    m = glm::translate(m, glm::vec3(displacement)/displacement.w);
+    //m = glm::translate(m, this->lOptions.position);
+    return m;
+}

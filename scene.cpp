@@ -57,6 +57,7 @@ void Scene::resetTriangleIterator() {
 
 void Scene::addMirror(Model *m) {
     this->mirrors.push_back(m);
+    m->hasMirror = true;
 }
 
 vector<Model*> Scene::getMirrors() {
@@ -71,17 +72,18 @@ void Scene::loadMap(const char* filename, Shader *s) {
     char objPath[255];
     glm::vec3 pos, scale, rot;
     float degrees;
-    while( fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
+    while (fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
                      objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
-                     &rot.x, &rot.y, &rot.z, &degrees) >0)
+                     &rot.x, &rot.y, &rot.z, &degrees) > 0)
     {
-        //cout << objPath << " " << scale.z << endl;
-        glm::mat4 m(1.0);
-        m = glm::scale(m, scale);
-        m = glm::rotate(m, degrees, rot);
-        m = glm::translate(m, pos);
+        loadOptions lOptions;
+        lOptions.position = pos;
+        lOptions.scale = scale;
+        lOptions.rotAxis = rot;
+        lOptions.rotDegrees = degrees;
         Model* model = new Model(objPath);
-        model->setModelMatrix(m);
+        model->lOptions = lOptions;
+        model->setModelMatrix(model->getLoadedMatrix());
         this->addModel(model, s);
     }
 
@@ -97,21 +99,22 @@ void Scene::loadMirrors(const char *filename, Shader* s)
     char objPath[255];
     glm::vec3 pos, scale, rot;
     float degrees;
-    while( fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
+    while (fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
                      objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
-                     &rot.x, &rot.y, &rot.z, &degrees) >0)
+                     &rot.x, &rot.y, &rot.z, &degrees) > 0)
     {
-        //cout << objPath << " " << scale.z << endl;
-        glm::mat4 m(1.0);
-        m = glm::scale(m, scale);
-        m = glm::rotate(m, degrees, rot);
-        m = glm::translate(m, pos);
+        loadOptions lOptions;
+        lOptions.position = pos;
+        lOptions.scale = scale;
+        lOptions.rotAxis = rot;
+        lOptions.rotDegrees = degrees;
         Model* model = new Model(objPath);
         model->meshes[0].isMirror = true;
-        model->setModelMatrix(m);
+        model->lOptions = lOptions;
+        model->setModelMatrix(model->getLoadedMatrix());
+
         this->addModel(model, s);
         this->addMirror(model);
-        //cout << "Mirror addr: " << model << endl;
     }
 
     fclose(pFile);

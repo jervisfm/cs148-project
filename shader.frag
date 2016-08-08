@@ -79,10 +79,15 @@ void main()
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
 
     vec4 illuminance = vec4(0.);
+    vec4 ambient = vec4(0);
     for(int i = 0; i < numLights; ++i)
     {
         illuminance += ComputeDirectionalTubeLight(allLights[i], FragPos, Normal);
+        //if (length(FragPos - allLights[i].position) < allLights[i].radius)
+        //{
+        //   ambient += vec4(0.3,0.3,0.3,1);
+       //}
     }
-    color = diffuse_texture_color * illuminance + vec4(material.ambient, 1.);
+    color = diffuse_texture_color * illuminance + vec4(material.ambient, 1.) + ambient;
 }
 

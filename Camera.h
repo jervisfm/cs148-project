@@ -73,20 +73,23 @@ public:
     }
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
+    glm::vec3 ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
     {
         GLfloat velocity = this->MovementSpeed * deltaTime;
         glm::vec3 movFront = this->Front;
         movFront.y = 0;
         movFront = glm::normalize(movFront);
+        glm::vec3 displacement;
         if (direction == FORWARD)
-            this->Position += movFront * velocity;
+            displacement = movFront * velocity;
         if (direction == BACKWARD)
-            this->Position -= movFront * velocity;
+            displacement = - (movFront * velocity);
         if (direction == LEFT)
-            this->Position -= this->Right * velocity;
+            displacement = -(this->Right * velocity);
         if (direction == RIGHT)
-            this->Position += this->Right * velocity;
+            displacement = this->Right * velocity;
+        this->Position += displacement;
+        return displacement;
 
         //std::cout <<
     }

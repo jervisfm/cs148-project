@@ -30,6 +30,7 @@ private:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    static float distanceToCamera(Model* m);
     ~Controls();
     static GLFWwindow* window;
     static GLfloat lastX, lastY;
@@ -41,7 +42,8 @@ private:
     static GLuint screenWidth, screenHeight;
     static Scene* scene;
     static LightState* ls;
-    static int activeMirror;
+    static int activeMirror, activeEditing;
+    static bool editMode, modelSelected;
 
 };
 
