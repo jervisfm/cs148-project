@@ -1,1 +1,2 @@
-pyramid_model/pyramid.obj pos: (-4.0, -.75, 4.0) scale: (1.,1.,1.) rot: (0.,1.,0.,15.)
+#pyramid_model/pyramid.obj pos: (-4.0, -.75, 4.0) scale: (1.,1.,1.) rot: (0.,1.,0.,15.)
+egypt_mummy_model/mummy.obj pos: (4.0, -.75, 4.0) scale: (1.,1.,1.) rot: (0.,1.,0.,15.)
