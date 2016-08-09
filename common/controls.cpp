@@ -113,17 +113,6 @@ void Controls::Do_Movement()
             }
         }
 
-        /*if (newActiveMirror != activeMirror) { //something changed
-            if (activeMirror != -1)
-            {
-                mirrors[activeMirror]->meshes[0].material.ambient = glm::vec3(0.,0.,0.);
-            }
-            if (newActiveMirror != -1)
-            {
-                mirrors[newActiveMirror]->meshes[0].material.ambient = glm::vec3(.5,0.5,0.5);
-            }
-        }*/
-
         activeMirror = newActiveMirror;
 
 
@@ -192,22 +181,25 @@ float Controls::distanceToCamera(Model* m)
     return glm::distance(center, camera.Position);
 }
 
-void Controls::updateState(Shader shader){
+void Controls::updateState(){
     // Set frame time
     GLfloat currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-
-    // Transformation matrices
-    glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
-    glm::mat4 view = camera.GetViewMatrix();
-    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-
     // Clear the colorbuffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     // Check and call events
     glfwPollEvents();
+
+}
+
+
+void Controls::bindState(Shader shader)
+{
+    glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 }
 
 void Controls::drawBorders(Shader borderShader) {

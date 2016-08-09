@@ -49,8 +49,7 @@ void Mesh::setupMesh()
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader shader)
-{
+void Mesh::bindTextures(Shader shader) {
     GLuint diffuseNr = 1;
     GLuint specularNr = 1;
     for(GLuint i = 0; i < this->textures.size(); i++)
@@ -72,17 +71,37 @@ void Mesh::Draw(Shader shader)
     glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
     glUniform3fv(glGetUniformLocation(shader.Program, "material.ambient"),1, glm::value_ptr(this->material.ambient));
 
-    // Draw mesh
-    glBindVertexArray(this->VAO);
-    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+}
 
+void Mesh::unbindTextures(Shader shader)
+{
     // Always good practice to set everything back to defaults once configured.
     for (GLuint i = 0; i < this->textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+}
+
+void Mesh::Draw(Shader shader)
+{
+    this->bindTextures(shader);
+
+    // Draw mesh
+    glBindVertexArray(this->VAO);
+    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    this->unbindTextures(shader);
+}
+
+void Mesh::DrawInstanced(Shader shader, unsigned n)
+{
+    this->bindTextures(shader);
+    glBindVertexArray(this->VAO);
+    glDrawElementsInstanced(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0, n);
+    glBindVertexArray(0);
+    this->unbindTextures(shader);
 }
 
 AABB Mesh::computeAABB(){

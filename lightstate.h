@@ -16,6 +16,7 @@ struct DirectionalLight {
 
 struct LightRay {
     glm::vec3 startPos, endPos;
+    double radius;
     bool reflected;
 };
 
@@ -47,9 +48,11 @@ public:
     }
 
     void updateState();
+    void drawTubes(Shader shader, Model* m);
 
     void bindLights(Shader shader);
     std::vector<DirectionalLight> primaryLights;
+
 
 private:
     Scene* scene;

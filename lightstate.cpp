@@ -63,6 +63,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
         LightRay lr;
         lr.startPos = dl.startPos;
         lr.endPos = result.P;
+        lr.radius = dl.radius;
         this->lightRays.push_back(lr);
         if (result.reflected && depth < 6)
         {
@@ -126,7 +127,6 @@ HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex 
 }
 
 void LightState::bindLights(Shader shader) {
-    // TODO : need to support more ligths, to be done after Milestone
     vector<DirectionalLight> lights = this->getDirectionalLights();
     //std::cout << "Lights start pos : " << lights[0].startPos.x<< ", " << lights[0].startPos.y << ", " << lights[0].startPos.z <<std::endl;
     //std::cout << "Lights dir : " << lights[0].dir.x<< ", " << lights[0].dir.y << ", " << lights[0].dir.z <<std::endl;
@@ -144,5 +144,15 @@ void LightState::bindLights(Shader shader) {
         glUniform3f(glGetUniformLocation(shader.Program, (name+".direction").c_str()), lights[i].dir.x, lights[i].dir.y, lights[i].dir.z);
         glUniform1f(glGetUniformLocation(shader.Program, (name+".radius").c_str()), lights[i].radius);
     }
+}
 
+void LightState::drawTubes(Shader shader, Model* m)
+{
+    vector<LightRay> lr = this->getLightRays();
+    vector<glm::mat4> models;
+    for(int i = 0; i < lr.size(); i++)
+    {
+        models.push_back(m->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
+    }
+    m->DrawInstanced(shader, models);
 }

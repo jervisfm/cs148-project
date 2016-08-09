@@ -36,68 +36,20 @@ int main()
     // Setup and compile our shaders
     Shader shader("shader.vs", "shader.frag");
     Shader borderShader("shader.vs", "bordershader.frag");
+    Shader lightShader("lightray.vs", "lightray.frag");
     Scene* scene = new Scene();
 
-
-    // Load models
-    //Model ourModel("nanosuit/nanosuit.obj");
-    Model ourModel("pyramid_model/pyramid.obj");
-
-    // Draw the loaded model
-    glm::mat4 model(1.);
-    model = glm::translate(model, glm::vec3(-1.f, -0.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-    model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit too big for our scene, so scale it down
-    ourModel.setModelMatrix(model);
-    //scene->addModel(&ourModel, &shader);
-
-    Model mirror("mirror1.obj");
-    mirror.meshes[0].isMirror = true;
-    glm::mat4 model2(1.);
-    //model2 = glm::rotate(model2, 90.f, glm::vec3(0.f, 1.f, 0.f));
-    model2 = glm::translate(model2, glm::vec3(-1.f, -0.25f, 2.f));
-    model2 = glm::scale(model2, glm::vec3(1.f, 1.f, 1.f));
-    mirror.setModelMatrix(model2);
-    //scene->addModel(mirror, &shader);
-    //scene->addMirror(&mirror);
-
+    //Load the scene
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
     Model* cylinder = Model::genCylinder(20);
 
-    scene->addModel(cylinder, &shader);
-    Model* cylinder2 = Model::genCylinder(20);
-
-    scene->addModel(cylinder2, &shader);
-
-
-
-    // Draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //ok, test the lightstate
-
-    //ls->updateState();
-
-    Model sphere("sphere.obj");
-    //sphere.meshes[0].isMirror = true;
-    glm::mat4 model3(1.);
-    model3 = glm::translate(model3, glm::vec3(-0.914908, 1.25379e-12, 1.99999));
-    model3 = glm::scale(model3, glm::vec3(0.2f, 0.2f, 0.2f));
-    sphere.setModelMatrix(model3);
-    //scene->addModel(&sphere, &shader);
-
-    Model sphere2("sphere.obj");
-    //sphere.meshes[0].isMirror = true;
-    glm::mat4 model4(1.);
-    model4 = glm::translate(model4,glm::vec3(-0.671641,3.57628e-07,0.384418));
-    model4 = glm::scale(model4, glm::vec3(0.1f, 0.1f, 0.1f));
-    sphere2.setModelMatrix(model4);
-    //scene->addModel(&sphere2, &shader);
 
     LightState* ls = new LightState(scene);
     DirectionalLight dl;
     dl.dir = glm::vec3(-1.5,0.3,-.5);
     dl.startPos = glm::vec3(4.1, 0.0, 3.75);
-    dl.radius = 2.55;
+    dl.radius = 1.55;
     ls->addPrimaryLight(dl);
 
 
@@ -115,25 +67,24 @@ int main()
         //ls->updateState();
         //bind the lights
         ls->bindLights(shader);
-        vector<LightRay> dl = ls->getLightRays();
-        cylinder->cylinderTransform(dl[0].startPos, dl[0].endPos);
-        if (dl.size() > 1)
-        {
-            cylinder2->cylinderTransform(dl[1].startPos, dl[1].endPos);
-        }
-
 
 
         //Update the view and projection matrices
-        Controls::updateState(shader);
+        Controls::updateState();
+        Controls::bindState(shader);
         borderShader.Use();
-        Controls::updateState(borderShader);
+        Controls::bindState(borderShader);
+        lightShader.Use();
+        Controls::bindState(lightShader);
 
         // Move the camera
         Controls::Do_Movement();
 
         shader.Use();
         scene->drawScene();
+
+        lightShader.Use();
+        ls->drawTubes(lightShader, cylinder);
 
         Controls::drawBorders(borderShader);
 

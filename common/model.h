@@ -45,9 +45,10 @@ class Model
             return m;
         }
 
-        void cylinderTransform(glm::vec3 start, glm::vec3 end);
+        glm::mat4 cylinderTransform(glm::vec3 start, glm::vec3 end, double radius);
 
         void Draw(Shader shader);
+        void DrawInstanced(Shader shader, vector<glm::mat4> models);
         void setModelMatrix(glm::mat4 matrix);
         glm::mat4 getModelMatrix() {
             return this->modelMatrix;

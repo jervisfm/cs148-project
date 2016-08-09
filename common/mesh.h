@@ -53,6 +53,7 @@ class Mesh {
         /*  Functions  */
         Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures);
         void Draw(Shader shader);
+        void DrawInstanced(Shader shader, unsigned n);
         AABB boundingBox;
         AABB computeAABB();
         bool nextTriangle(Vertex*, Vertex*, Vertex*);
@@ -64,6 +65,8 @@ class Mesh {
         GLuint VAO, VBO, EBO;
         /*  Functions    */
         void setupMesh();
+        void bindTextures(Shader shader);
+        void unbindTextures(Shader shader);
         unsigned indexIndex=0;
 };
 

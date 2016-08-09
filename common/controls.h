@@ -24,7 +24,8 @@ public:
     }
 
     static void Do_Movement();
-    static void updateState(Shader shader);
+    static void updateState();
+    static void bindState(Shader shader);
     static Camera getCamera();
     static Model* getActiveMirror() {
         if (Controls::activeMirror > -1)

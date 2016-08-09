@@ -39,7 +39,20 @@ void Model::Draw(Shader shader)
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
     for(GLuint i = 0; i < this->meshes.size(); i++)
         this->meshes[i].Draw(shader);
+}
 
+void Model::DrawInstanced(Shader shader, vector<glm::mat4> models)
+{
+    glStencilMask(0x00);
+    for (int i = 0; i < models.size(); i++)
+    {
+        std::ostringstream ss;
+        ss << "models[" << i << "]";
+        std::string s = ss.str();
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, s.c_str()), 1, GL_FALSE, glm::value_ptr(models[i]));
+    }
+    for(GLuint i = 0; i < this->meshes.size(); i++)
+        this->meshes[i].DrawInstanced(shader, models.size());
 }
 
 void Model::loadModel(string path)
@@ -232,15 +245,15 @@ Vertex Model::transformPoint(Vertex v)
 
 glm::mat4 Model::getLoadedMatrix() {
     glm::mat4 m(1.0);
-    m = glm::scale(m, this->lOptions.scale);
+    m = glm::translate(m, this->lOptions.position);
     m = glm::rotate(m, this->lOptions.rotDegrees, this->lOptions.rotAxis);
-    glm::vec4 displacement = glm::inverse(m)*glm::vec4(this->lOptions.position, 1.);
-    m = glm::translate(m, glm::vec3(displacement)/displacement.w);
-    //m = glm::translate(m, this->lOptions.position);
+    m = glm::scale(m, this->lOptions.scale);
+
     return m;
 }
 
-void Model::cylinderTransform(glm::vec3 start, glm::vec3 end) {
+glm::mat4 Model::cylinderTransform(glm::vec3 start, glm::vec3 end, double radius) {
+
     glm::vec3 bot = glm::vec3(0,0,0);
     glm::vec3 top = glm::vec3(0,1,0);
 
@@ -252,8 +265,8 @@ void Model::cylinderTransform(glm::vec3 start, glm::vec3 end) {
     glm::mat4 m(1.0);
     m = glm::translate(m, (start-bot));
     m = glm::rotate(m, angle, axis);
-    m = glm::scale(m, glm::vec3(1., scaleY, 1.));
+    m = glm::scale(m, glm::vec3(radius, scaleY, radius));
 
 
-    this->setModelMatrix(m);
+    return m;
  }
