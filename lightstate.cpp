@@ -31,6 +31,8 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
     for (int i = 0; i < nModels; i++)
     {
         Model* model = this->scene->models[i].m;
+        if (model->isCylinder)
+            continue;
         mat4 invM = transpose(model->invTmodelMatrix);
         vec4 op = invM*(vec4(dl.startPos, 1.));
         vec3 o = vec3(op)/op.w;

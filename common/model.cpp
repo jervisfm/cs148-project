@@ -3,6 +3,7 @@
 #include <SOIL.h>
 #include <iostream>
 using namespace std;
+#include <math.h>
 
 GLint TextureFromFile(const char* path, string directory)
 {
@@ -12,10 +13,10 @@ GLint TextureFromFile(const char* path, string directory)
     GLuint textureID;
     glGenTextures(1, &textureID);
     int width,height;
-    unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+    unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
     // Assign texture to ID
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Parameters
@@ -70,6 +71,42 @@ void Model::processNode(aiNode* node, const aiScene* scene)
     {
         this->processNode(node->mChildren[i], scene);
     }
+}
+
+Mesh Model::genVertices(float radius, unsigned precision)
+{
+    vector<Vertex> vertices;
+    vector<GLuint> indices;
+    vector<Texture> textures;
+    float theta = 2*M_PI/(double)precision;
+    for (int i = 0; i < precision; i++)
+    {
+        Vertex v;
+        for (int j = 0; j <= 1; j++) //upper and lower circle
+        {
+            v.Position = glm::vec3(radius*cos(i*theta), j, radius*sin(i*theta));
+            v.Normal = glm::vec3(cos(i*theta), 0., sin(i*theta));
+            float x = (double)i/(double)precision;
+            float u = 2*x < 1. ? 2*x : 2. - 2*x;
+            v.TexCoords = glm::vec2(u, j); //TODO : change it
+            std::cout << "UV : " << v.TexCoords[0] << ", " << v.TexCoords[1] << std::endl;
+            vertices.push_back(v);
+            for (int k = 0; k < 3; k++)
+            {
+                indices.push_back((2*i+j+k) % (2*precision));
+            }
+        }
+
+    }
+    // Texture
+    Texture texture;
+    texture.id = TextureFromFile("light_texture.png", "models");
+    texture.type = "texture_diffuse";
+    texture.path = "models/light_texture.png";
+    cout << texture.path.C_Str() << endl;
+    textures.push_back(texture);
+    this->textures_loaded.push_back(texture);  // Add to loaded textures
+    return Mesh(vertices, indices, textures);
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
@@ -202,3 +239,21 @@ glm::mat4 Model::getLoadedMatrix() {
     //m = glm::translate(m, this->lOptions.position);
     return m;
 }
+
+void Model::cylinderTransform(glm::vec3 start, glm::vec3 end) {
+    glm::vec3 bot = glm::vec3(0,0,0);
+    glm::vec3 top = glm::vec3(0,1,0);
+
+    glm::vec3 dir = glm::normalize(end-start);
+    glm::vec3 axis = glm::cross(top-bot, dir);
+    float angle = acos(glm::dot(top-bot, dir));
+    float scaleY = glm::length(start-end);
+
+    glm::mat4 m(1.0);
+    m = glm::translate(m, (start-bot));
+    m = glm::rotate(m, angle, axis);
+    m = glm::scale(m, glm::vec3(1., scaleY, 1.));
+
+
+    this->setModelMatrix(m);
+ }

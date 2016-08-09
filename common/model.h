@@ -33,6 +33,20 @@ class Model
             this->modelMatrix = glm::mat4(1.);
             this->pathName = path;
         }
+        Model() {}
+
+        static Model* genCylinder(unsigned precision)
+        {
+            Model* m = new Model();
+            m->meshes.push_back(m->genVertices(1.0, precision));
+            m->pathName = "";
+            m->modelMatrix = glm::mat4(1.);
+            m->isCylinder = true;
+            return m;
+        }
+
+        void cylinderTransform(glm::vec3 start, glm::vec3 end);
+
         void Draw(Shader shader);
         void setModelMatrix(glm::mat4 matrix);
         glm::mat4 getModelMatrix() {
@@ -59,6 +73,7 @@ class Model
         }
         bool hasMirror = false;
         glm::mat4 getLoadedMatrix();
+        bool isCylinder = false;
 
     private:
         /*  Model Data  */
@@ -71,5 +86,6 @@ class Model
         vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
                                              string typeName);
         vector<Texture> textures_loaded;
+        Mesh genVertices(float radius, unsigned precision);
 };
 #endif // MODEL_H

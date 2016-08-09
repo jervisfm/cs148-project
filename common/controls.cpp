@@ -100,7 +100,7 @@ void Controls::Do_Movement()
     // Compute the new active mirror, and active object
     if (keys[GLFW_KEY_W] || keys[GLFW_KEY_S] || keys[GLFW_KEY_A] || keys[GLFW_KEY_D])
     {
-        //std::cout << "Current position : (" << camera.Position.x << ", "<< camera.Position.y<< ", "<< camera.Position.z << ")" << std::endl;
+        std::cout << "Current position : (" << camera.Position.x << ", "<< camera.Position.y<< ", "<< camera.Position.z << ")" << std::endl;
         int newActiveMirror = -1;
         vector<Model*> mirrors = scene->getMirrors();
         for(int i = 0; i < mirrors.size(); i++)

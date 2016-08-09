@@ -62,6 +62,13 @@ int main()
 
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
+    Model* cylinder = Model::genCylinder(20);
+
+    scene->addModel(cylinder, &shader);
+    Model* cylinder2 = Model::genCylinder(20);
+
+    scene->addModel(cylinder2, &shader);
+
 
 
     // Draw in wireframe
@@ -88,8 +95,8 @@ int main()
 
     LightState* ls = new LightState(scene);
     DirectionalLight dl;
-    dl.dir = glm::vec3(-1.,0.,0.);
-    dl.startPos = glm::vec3(0., 0.0, 2.);
+    dl.dir = glm::vec3(-1.5,0.3,-.5);
+    dl.startPos = glm::vec3(4.1, 0.0, 3.75);
     dl.radius = 2.55;
     ls->addPrimaryLight(dl);
 
@@ -108,6 +115,14 @@ int main()
         //ls->updateState();
         //bind the lights
         ls->bindLights(shader);
+        vector<LightRay> dl = ls->getLightRays();
+        cylinder->cylinderTransform(dl[0].startPos, dl[0].endPos);
+        if (dl.size() > 1)
+        {
+            cylinder2->cylinderTransform(dl[1].startPos, dl[1].endPos);
+        }
+
+
 
         //Update the view and projection matrices
         Controls::updateState(shader);

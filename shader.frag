@@ -51,7 +51,7 @@ vec4 ComputeDirectionalTubeLight(Light light, vec3 frag_position, vec3 frag_norm
       light_reduction_coefficient = 0.;
 
 
-  float diffuse_light_coefficient = light_reduction_coefficient ;//* max(0.0, dot(normalize(Normal), surface_to_light_vector));
+  float diffuse_light_coefficient = light_reduction_coefficient * max(0.0, dot(normalize(Normal), surface_to_light_vector));
   return vec4(diffuse_light_coefficient, diffuse_light_coefficient, diffuse_light_coefficient, 1.0);
 }
 
@@ -79,7 +79,7 @@ vec4 ComputeSpotLight(vec3 light_position, vec3 light_direction, vec3 light_cone
 void main()
 {
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
-
+    //diffuse_texture_color.a = 0.1;
     vec4 illuminance = vec4(0.01);
     vec4 ambient = vec4(0);
     for(int i = 0; i < numLights; ++i)
@@ -90,11 +90,11 @@ void main()
        //   illuminance += vec4(0.3,0.3,0.3,1);
        //}
     }
-    color = diffuse_texture_color * illuminance + vec4(material.ambient, 1.) + ambient;
+    color = diffuse_texture_color * illuminance + vec4(material.ambient, 0.) + ambient;
 
     // Color overide to check what color texture loads with. Handy for testing but should
     // be disabled otherwise.
-    vec4 full_light_color = diffuse_texture_color + vec4(material.ambient, 1.) + ambient;
-    color = full_light_color;
+    //vec4 full_light_color = diffuse_texture_color + vec4(material.ambient, 1.) + ambient;
+    //color = full_light_color;
 }
 
