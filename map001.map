@@ -1,7 +1,7 @@
-pyramid_model/pyramid.obj pos: (-4.0, -.75, 4.0) scale: (1.,1.,1.) rot: (0.,1.,0.,15.)
-#Mummy close to mirror.
+pyramid_model/pyramid.obj pos: (-4.0, -.75, 4.0) scale: (2.,2.,2.) rot: (0.,1.,0.,15.)
+# Mummy close to mirror.
 egypt_mummy_model/mummy.obj pos: (0.0, -.75, 0.0) scale: (.5,.5,.5) rot: (0.,1.,0.,0.0)
-#Some mummies in a triangle formation.
+# Some mummies in a triangle formation.
 egypt_mummy_model/mummy.obj pos: (-6.0, -.75, 4.0) scale: (1.,1.,1.) rot: (0.,1.,0.,1.0)
 egypt_mummy_model/mummy.obj pos: (-8.0, -.75, 4.0) scale: (1.,1.,1.) rot: (0.,1.,0.,1.0)
 egypt_mummy_model/mummy.obj pos: (-8.0, -.75, 2.0) scale: (1.,1.,1.) rot: (0.,1.,0.,1.0)

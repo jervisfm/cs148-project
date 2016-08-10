@@ -60,6 +60,13 @@ public:
         this->primaryLights.push_back(dl);
     }
 
+    // Loads primary lights from the given |light_map_file|. |light_map_file|
+    // should be a text file that has lines of the format:
+    // pos: (X, X, X) direction: (X, X, X) radius: X
+    // where 'X' is a placeholder for a numeric (float) value. A valid sample
+    // line is given below:
+    // pos: (4.1, 2.0, 3.75) direction: (-1.5, -0.5, -0.5) radius: 1.55
+    void loadLights(const std::string&  light_map_file);
     void updateState();
     void drawTubes(Shader shader);
 

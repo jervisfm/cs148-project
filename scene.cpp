@@ -67,62 +67,66 @@ vector<Model*> Scene::getMirrors() {
 }
 
 void Scene::loadMap(const char* filename, Shader *s) {
-    FILE *pFile;
-    pFile = fopen(filename, "r");
-    if (pFile == (void*)0) return;
-
-    char objPath[255];
-    glm::vec3 pos, scale, rot;
-    float degrees;
-    while (fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
-                     objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
-                     &rot.x, &rot.y, &rot.z, &degrees) > 0)
-    {
+    std::ifstream input_file_stream(filename);
+    std::string file_line;
+    while (std::getline(input_file_stream, file_line)) {
         // Skip over any lines in the map file that start with # -- these are comments.
-        if (objPath[0] == '#') {
+        if (file_line[0] == '#') {
             continue;
         }
 
-        loadOptions lOptions;
-        lOptions.position = pos;
-        lOptions.scale = scale;
-        lOptions.rotAxis = rot;
-        lOptions.rotDegrees = degrees;
-        Model* model = new Model(objPath);
-        model->lOptions = lOptions;
-        model->setModelMatrix(model->getLoadedMatrix());
-        this->addModel(model, s);
-    }
+        char objPath[255];
+        glm::vec3 pos, scale, rot;
+        float degrees;
+        if (sscanf(file_line.c_str(), "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
+                      objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
+                      &rot.x, &rot.y, &rot.z, &degrees) > 0)
+        {
+            loadOptions lOptions;
+            lOptions.position = pos;
+            lOptions.scale = scale;
+            lOptions.rotAxis = rot;
+            lOptions.rotDegrees = degrees;
+            Model* model = new Model(objPath);
+            model->lOptions = lOptions;
+            model->setModelMatrix(model->getLoadedMatrix());
+            this->addModel(model, s);
+        }
 
-    fclose(pFile);
+
+    }
 }
 
 void Scene::loadMirrors(const char *filename, Shader* s)
 {
-    FILE *pFile;
-    pFile = fopen(filename, "r");
-    if (pFile == (void*)0) return;
+    std::ifstream input_file_stream(filename);
+    std::string file_line;
+    while (std::getline(input_file_stream, file_line)) {
+        // Skip over any lines in the map file that start with # -- these are comments.
+        if (file_line[0] == '#') {
+            continue;
+        }
 
-    char objPath[255];
-    glm::vec3 pos, scale, rot;
-    float degrees;
-    while (fscanf(pFile, "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
-                     objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
-                     &rot.x, &rot.y, &rot.z, &degrees) > 0)
-    {
-        loadOptions lOptions;
-        lOptions.position = pos;
-        lOptions.scale = scale;
-        lOptions.rotAxis = rot;
-        lOptions.rotDegrees = degrees;
-        Model* model = new Model(objPath);
-        model->meshes[0].isMirror = true;
-        model->lOptions = lOptions;
-        model->setModelMatrix(model->getLoadedMatrix());
+        char objPath[255];
+        glm::vec3 pos, scale, rot;
 
-        this->addModel(model, s);
-        this->addMirror(model);
+        float degrees;
+        if (sscanf(file_line.c_str(), "%s pos: (%f, %f, %f) scale: (%f, %f, %f) rot: (%f, %f, %f, %f)",
+                      objPath, &pos.x, &pos.y, &pos.z, &scale.x, &scale.y, &scale.z,
+                      &rot.x, &rot.y, &rot.z, &degrees) > 0)
+        {
+            loadOptions lOptions;
+            lOptions.position = pos;
+            lOptions.scale = scale;
+            lOptions.rotAxis = rot;
+            lOptions.rotDegrees = degrees;
+            Model* model = new Model(objPath);
+            model->meshes[0].isMirror = true;
+            model->lOptions = lOptions;
+            model->setModelMatrix(model->getLoadedMatrix());
+
+            this->addModel(model, s);
+            this->addMirror(model);
+        }
     }
-
-    fclose(pFile);
 }
