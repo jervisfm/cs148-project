@@ -36,6 +36,7 @@ void main()
         illluminance += max(0., 1-d/li)
 
     }*/
+
     color = diffuse_texture_color * illuminance + vec4(material.ambient, 0.) + ambient;
 
 }

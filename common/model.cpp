@@ -117,7 +117,8 @@ Mesh Model::genCylinderVertices(float radius, unsigned precision)
             vertices.push_back(v);
             for (int k = 0; k < 3; k++)
             {
-                indices.push_back((2*i+j+k) % (2*precision));
+                unsigned index = j % 2 == 0 ? 2*i+j+k : 2*i+j + (2-k);
+                indices.push_back(index % (2*precision));
             }
         }
 

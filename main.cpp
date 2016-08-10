@@ -84,9 +84,11 @@ int main()
         Controls::Do_Movement();
 
         shader.Use();
+        //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         scene->drawScene();
 
         lightShader.Use();
+        //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
         ls->drawTubes(lightShader, cylinder, cylinderTop);
 
         Controls::drawBorders(borderShader);
