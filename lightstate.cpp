@@ -13,7 +13,29 @@ using namespace glm;
 HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex B, Vertex C);
 
 void LightState::loadLights(const std::string &light_map_file) {
-    // TODO(jmuindi): implement function.
+    std::ifstream input_file_stream(light_map_file);
+    std::string file_line;
+    while(std::getline(input_file_stream, file_line)) {
+        // Skip over any lines the map file that start with '#' -- these are comments
+        if (file_line[0] == '#') {
+            continue;
+        }
+        glm::vec3 position, direction;
+        float radius;
+        if (sscanf(file_line.c_str(), "pos: (%f, %f, %f) direction: (%f, %f, %f) radius: %f", &position.x, &position.y, &position.z, &direction.x, &direction.y, &direction.z, &radius) > 0) {
+            std::cout << "Light dir: (" << direction.x << "," << direction.y << "," << direction.z << ")" << std::endl;
+            std::cout << "Light Pos: (" << position.x << "," << position.y << "," << position.z << ")" << std::endl;
+            std::cout << "Light Radius: " << radius;
+            std::cout << "-----" << endl;
+            DirectionalLight directional_light;
+            directional_light.dir = direction;
+            directional_light.startPos = position;
+            directional_light.radius = radius;
+            addPrimaryLight(directional_light);
+        }
+        updateState();
+    }
+
 }
 
 void LightState::updateState()
