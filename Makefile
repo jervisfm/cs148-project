@@ -3,7 +3,7 @@ LD = g++
 CPPFLAGS = -O3 -std=c++11 -g
 LDFLAGS =
 TARGET = pyramid
-OBJS = objs/main.o objs/setup.o objs/controls.o objs/mesh.o objs/model.o objs/scene.o objs/lightstate.o
+OBJS = objs/main.o objs/setup.o objs/controls.o objs/mesh.o objs/model.o objs/scene.o objs/lightstate.o objs/scattering.o
 INCLUDE = -I/usr/local/include
 OS = $(shell uname)
 
@@ -37,6 +37,8 @@ objs/scene.o: scene.cpp
 objs/lightstate.o: lightstate.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDE) lightstate.cpp -o objs/lightstate.o
 
+objs/scattering.o: scattering/scattering.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDE) scattering/scattering.cpp -o objs/scattering.o
 
 clean:
 	rm -f objs/*.o $(TARGET)

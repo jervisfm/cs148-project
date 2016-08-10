@@ -9,6 +9,12 @@
 #include "../Shader.h"
 #include "../scene.h"
 #include "../lightstate.h"
+// GLM Mathemtics
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 class Controls {
 public:
@@ -34,6 +40,18 @@ public:
             return nullptr;
     }
     static void drawBorders(Shader);
+    static GLuint getScreenWidth(){
+	return screenWidth;
+    }
+    static GLuint getScreenHeight(){
+	return screenHeight;
+    }
+    static glm::mat4 getViewMatrix(){
+	return view;
+    }
+    static glm::mat4 getProjectionMatrix(){
+	return projection;
+    }
 private:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -52,6 +70,7 @@ private:
     static LightState* ls;
     static int activeMirror, activeEditing;
     static bool editMode, modelSelected;
+    static glm::mat4 view, projection;
 
 };
 

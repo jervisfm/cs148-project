@@ -23,7 +23,8 @@ Camera Controls::camera;
 LightState* Controls::ls;
 int Controls::activeMirror = -1, Controls::activeEditing = -1;
 bool Controls::editMode = false, Controls::modelSelected = false;
-
+glm::mat4 Controls::view = glm::mat4();
+glm::mat4 Controls::projection = glm::mat4();
 
 
 void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -196,8 +197,8 @@ void Controls::updateState(){
 
 void Controls::bindState(Shader shader)
 {
-    glm::mat4 projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
-    glm::mat4 view = camera.GetViewMatrix();
+    projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
+    view = camera.GetViewMatrix();
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 }
