@@ -40,8 +40,8 @@ GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
 
 // Light attributes
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f), endLightPos(0, 0, -2);
-float lightRadius = 0.50;
+glm::vec3 lightPos(4.0f, 4.0f, -2.0f), endLightPos(0, 0, -10);
+float lightRadius = 1.50;
 
 // Deltatime
 GLfloat deltaTime = 0.0f;	// Time between current frame and last frame
@@ -77,54 +77,6 @@ bool withinLight(glm::vec3 pos){
     return false;
 }
 
-unsigned int generate_LightMap(glm::vec3 vertices[4], float s_dist, float t_dist){ 
-    const int LightMap_Size = 64;
-    static unsigned char data[LightMap_Size * LightMap_Size * 3];
-    static unsigned int lightmap_tex_num;
-    unsigned int i, j;
-    glm::vec3 pos;
-    float step, s, t;
-    //if (lightmap_tex_num == 0)
-    step = 1.0f / LightMap_Size;
-    s = t = 0.0f;
-    for ( i = 0; i < LightMap_Size; i++){
-	for(j = 0; j < LightMap_Size; j++){
-	    float d;
-            float tmp;
-            pos[0] = s_dist*s;
-	    pos[1] = t_dist*t;
-            pos[2] = 0.0f;
-            pos[0] += vertices[0][0];
-	    pos[1] += vertices[0][1];
-            pos[2] += vertices[0][2];
-       
-            //check to see if point is within cylinder
-            if(withinLight(pos)){
-		tmp = 1;
-		//std::cout<<"WITHIN LIGHT"<<std::endl;
-	    }else{
-		tmp = 0;
-	    }	
-	    data[i*LightMap_Size * 3 + j * 3 + 0] = (unsigned char)(255.0f * tmp * 1.0/*LightColor[0]*/);
-	    data[i*LightMap_Size * 3 + j * 3 + 1] = (unsigned char)(255.0f * tmp * 1.0/*LightColor[1]*/);
-            data[i*LightMap_Size * 3 + j * 3 + 2] = (unsigned char)(255.0f * tmp * 1.0/*LightColor[2]*/);
-	    s += step;
-        }
-        t += step;
-        s = 0.0f;
-    }
-    glGenTextures(1, &lightmap_tex_num);
-    glBindTexture(GL_TEXTURE_2D, lightmap_tex_num);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //GL_REPEAT (OLD)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, LightMap_Size, LightMap_Size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-
-    return lightmap_tex_num;	    
-}
 //http://learnopengl.com/code_viewer.php?code=advanced-lighting/bloom
 GLuint quadVAO = 0;
 GLuint quadVBO;
@@ -153,8 +105,7 @@ void RenderQuad(){
     }
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
-    
+    glBindVertexArray(0); 
 }
 
 //http://joshbeam.com/articles/dynamic_lightmaps_in_opengl/
@@ -267,6 +218,7 @@ GLfloat *createVirtualPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 vie
 		arr[8*l+7] = 1.0;
 		l++;		
 	}
+	l = 0;
         return arr;
 }
 
@@ -298,6 +250,36 @@ GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     return frame_texture;
+}
+
+GLuint containerVAO = 0;
+GLuint planeObject;
+void createVirtPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos){
+    GLfloat vert[48*numLattice];
+    GLfloat *vertices = createVirtualPlanes(view, projection, viewPos, vert);
+    if(containerVAO == 0){
+	// First, set the container's VAO 
+    	glGenVertexArrays(1, &containerVAO);
+	glGenBuffers(1, &planeObject);
+	   
+    }
+    glBindVertexArray(containerVAO); 
+    glBindBuffer(GL_ARRAY_BUFFER, planeObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    // Normal attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    // TEXTURE COORDINATE ATTRIBUE
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(containerVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6*numLattice);	
+    glBindVertexArray(0);
+    
 }
 
 // The MAIN function, from here we start the application and run the game loop
@@ -338,68 +320,10 @@ int main()
     
     // OpenGL options
     glEnable(GL_DEPTH_TEST);
-    Shader lightingShader("phong.vs", "phong.frag");
+    Shader lightingShader("lightMap.vs", "lightMap.frag");
     Shader gaussianShader("gaussian.vs", "gaussian.frag");
     Shader finalShader("finalPass.vs", "finalPass.frag");
     
-    //Initial camera Transformations
-    glm::mat4 view;
-    view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
-
-    GLfloat vert[48*numLattice];
-    GLfloat *vertices = createVirtualPlanes(view, projection, camera.Position, vert);
-    std::cout<<"Vertices updated:"<<std::endl;
-    for(int n = 0; n<3; n++){
-	std::cout<<vertices[8*n]<<" "<<vertices[8*n+1]<<" "<<vertices[8*n+2]<<std::endl;
-    }
-    	
-    //Create light map for each plane. 
-    glm::vec3 currPlane[4];
-    int lightmap[numLattice];
-    for(int n = 0; n < numLattice; n++){
-    	for(int m = 0; m < 4; m++){
-	    currPlane[m] = glm::vec3(vertices[(48*n)+(8*m)], vertices[(48*n)+(8*m)+1], vertices[(48*n)+(8*m)+2]);
-        }
-    	lightmap[n] = generate_LightMap(currPlane, length(currPlane[1]-currPlane[0]),length(currPlane[2]-currPlane[0]));
-	//std::cout<<"lightmap count "<<lightmap[n]<<std::endl;
-    } 
-    std::cout<<currPlane[0].x<<" "<<currPlane[0].y<<" "<<currPlane[0].z<<std::endl;
-
-    // First, set the container's VAO 
-    GLuint containerVAO;
-    glGenVertexArrays(1, &containerVAO);
-    GLuint planeObject;
-    glGenBuffers(1, &planeObject);
-    
-    glBindVertexArray(containerVAO);
-    
-   //PLANE OBJECT BUFFER (VERTICES ARRAY)
- 
-    glBindBuffer(GL_ARRAY_BUFFER, planeObject);
-    //TODO TODO TODO Update this to be a better something
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vertices, GL_STATIC_DRAW);
-
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    // Normal attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    // TEXTURE COORDINATE ATTRIBUE
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
- 
-    glBindVertexArray(0);
-
-
-    // Then, we set the light's VAO (VBO stays the same. After all, the vertices are the same for the light object (also a 3D cube))
-    GLuint lightVAO;
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
-    // We only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need.
-    glBindBuffer(GL_ARRAY_BUFFER, planeObject);
-
     //FRAME BUFFER for the SCREEN
     //http://learnopengl.com/code_viewer.php?code=advanced/framebuffers_screen_texture
     GLuint LightRender[2];
@@ -456,34 +380,35 @@ int main()
         glUniform3f(lightPosLoc,    lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
 	glUniform3f(glGetUniformLocation(lightingShader.Program, "endLightPos"), endLightPos.x, endLightPos.y, endLightPos.z);
+	glUniform1f(glGetUniformLocation(lightingShader.Program, "lightRadius"), lightRadius);
 
         // Create camera transformations
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(camera.Zoom, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
         // Get the uniform locations
         GLint modelLoc = glGetUniformLocation(lightingShader.Program, "model");
         GLint viewLoc  = glGetUniformLocation(lightingShader.Program,  "view");
         GLint projLoc  = glGetUniformLocation(lightingShader.Program,  "projection");
-        // Pass the matrices to the shader
+	        
+	// Pass the matrices to the shader
         glm::mat4 model;
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-	glBindVertexArray(containerVAO);
-        //Render Light maps on virtual planes
-        for(int x = numLattice-1; x >=0; x--){
-		glBindTexture(GL_TEXTURE_2D, lightmap[x]);		
-		glDrawArrays(GL_TRIANGLES, x*6, 6);
-	}	
-        glBindVertexArray(0);
+	
+	//MAKE DYNAMIC VIRTUAL PLANES:
+	createVirtPlanes(view, projection, camera.Position);
+	
+	//glBindVertexArray(containerVAO);
+	//glDrawArrays(GL_TRIANGLES, 0, 6*numLattice);	
+        //glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	//GAUSSIAN SHADER
 	gaussianShader.Use();
 	bool horizontal = true;
 	bool first_iteration = true;
-	GLint amount = 30;
+	GLint amount = 10;
  	for (GLuint i = 0; i < amount; i++)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]); 

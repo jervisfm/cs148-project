@@ -1,6 +1,6 @@
 CPP = g++
 LD = g++
-CPPFLAGS = -O3 -std=c++11
+CPPFLAGS = -O3 -std=c++11 -g
 LDFLAGS =
 TARGET = hw3
 OBJS = main.o

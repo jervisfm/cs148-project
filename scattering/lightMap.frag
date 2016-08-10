@@ -36,7 +36,7 @@ void main()
     //color = texture(myTexture, TextCoord);
     color = lightCheck ? vec4(1.0) : vec4(0.0);
     color.a = dot(color.rgb, vec3(0.33));          
-    if(color.a < 0.9)
+    if(color.a < 0.1)
 	discard;
     color.a = clamp(color.a, 0.0, 1.0);
 }
