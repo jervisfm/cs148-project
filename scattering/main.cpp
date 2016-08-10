@@ -62,7 +62,7 @@ glm::vec3 oneMinusVect3(glm::vec3 vector){
 	
 }
 
-int numLattice = 16;
+int numLattice = 100;
 int l = 0;
 
 bool withinLight(glm::vec3 pos){
@@ -144,16 +144,16 @@ GLfloat *createVirtualPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 vie
 	edgeFrustrum[3]  = finalCubeVert[7] - finalCubeVert[3]; //bottomRight edge
 	
 	//Variables for virtual plane and lattice's calculation
-	//double deltaT = length(edgeFrustrum[0])/(numLattice*length(edgeFrustrum[0]));
+	double deltaT = length(edgeFrustrum[0])/(numLattice*length(edgeFrustrum[0]));
 	glm::vec3 planeVert[4];
 	glm::vec3 planeEdges[2];
 	//double deltaNx;
 	//double deltaNy;
 	
 	//Place planes inside the light's frustrum (z coordinate of beginning and end)
-	float startT = (lightPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
-	float endT = (endLightPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
-	float deltaT = (startT-endT)/((startT-endT)*numLattice);
+	//float startT = (lightPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
+	//float endT = (endLightPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
+	//float deltaT = (startT-endT)/((startT-endT)*numLattice);
 	//std::cout<<"startT is: "<<startT<<std::endl;	
 	//std::cout<<"endT is: "<<endT<<std::endl;
 	//std::cout<<"deltaT is: "<<deltaT<<std::endl;
@@ -161,7 +161,7 @@ GLfloat *createVirtualPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 vie
 	for(int i = 0; i < numLattice; i++){
 	    //determine start/end points for new plane
 	    for(int j = 0; j < 4; j++){
-		planeVert[j] = finalCubeVert[j]+edgeFrustrum[j]* (float)(startT+(endT-startT)*(deltaT*i));
+		planeVert[j] = finalCubeVert[j]+edgeFrustrum[j]*(float)/*(startT+(endT-startT)*/(deltaT*i);
 		//std::cout<<"Plane Vertices: "<<planeVert[j].z<<std::endl;
 
 	    }
