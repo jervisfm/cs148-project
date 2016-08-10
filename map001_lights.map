@@ -1,1 +1,4 @@
+# Original light.
 pos: (4.1, 2.0, 3.75) direction: (-1.5, -0.5, -0.5) radius: 1.55
+# Second test light.
+pos: (-7.5, 1.0, 11.3) direction: (-1.5, -0.5, -0.5) radius: 1.55
