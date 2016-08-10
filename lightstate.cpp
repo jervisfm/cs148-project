@@ -12,6 +12,10 @@ using namespace glm;
 
 HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex B, Vertex C);
 
+void LightState::loadLights(const std::string &light_map_file) {
+    // TODO(jmuindi): implement function.
+}
+
 void LightState::updateState()
 {
     this->directionalLights.clear();

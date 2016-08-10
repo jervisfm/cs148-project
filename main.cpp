@@ -55,15 +55,6 @@ int main()
     dl.radius = 1.55;
     ls->addPrimaryLight(dl);
 
-
-    DirectionalLight dl2;
-    dl2.dir = glm::vec3(-1.5,-0.5,-.5);
-    dl2.startPos = glm::vec3(-1.64959, 0, 7.55323);
-    dl2.radius = 1.55;
-    ls->addPrimaryLight(dl2);
-
-
-
     // Initialize controls
     Controls::init(window, scene, ls, glm::vec3(0.f,0.f,3.f));
 
