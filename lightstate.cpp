@@ -31,7 +31,7 @@ void LightState::loadLights(const std::string &light_map_file) {
             directional_light.dir = direction;
             directional_light.startPos = position;
             directional_light.radius = radius;
-            addPrimaryLight(directional_light);
+            this->addPrimaryLight(directional_light);
         }
         updateState();
     }
@@ -47,24 +47,27 @@ void LightState::updateState()
         dl = this->ShootRay(this->primaryLights[i], 0);
         this->directionalLights.push_back(dl);
     }
+
 }
 
 DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
     HitRecord result, r;
     result.t = -1;
-    //std::cout << "Shooting ray" << std::endl;
+    std::cout << "Shooting ray" << std::endl;
     unsigned nModels = this->scene->models.size();
+    std::cout << nModels << " models in the scene" << endl;
     for (int i = 0; i < nModels; i++)
     {
         Model* model = this->scene->models[i].m;
-        if (model->isCylinder)
-            continue;
+        //if (model->isCylinder)
+        //    continue;
         mat4 invM = transpose(model->invTmodelMatrix);
         vec4 op = invM*(vec4(dl.startPos, 1.));
         vec3 o = vec3(op)/op.w;
         vec3 d = vec3(invM*(vec4(dl.dir, 0)));
         Ray ray;
         ray.o = o; ray.d = d;
+        //ray.o = dl.startPos; ray.d = dl.dir;
         unsigned nMeshes = model->meshes.size();
         for (int j = 0; j < nMeshes; j++)
         {
@@ -73,10 +76,14 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
             mesh.resetTriangleIterator();
             while (mesh.nextTriangle(&A, &B, &C))
             {
+                //A = model->transformPoint(A);
+                //B = model->transformPoint(B);
+                //C = model->transformPoint(C);
                 r = intersectTriangle(ray, model, mesh, A, B, C);
+                //std::cout << "intersect with a triangle ? " << r.t<< std::endl;
                 if (r.t > 0.000001 && (r.t < result.t || result.t < 0.))
                 {
-                    //std::cout << "Intersection" << std::endl;
+                    std::cout << "Intersection" << std::endl;
                     result = r;
                 }
             }
@@ -96,7 +103,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
         {
             DirectionalLight dlReflected;
             dlReflected.dir = normalize(dl.dir - 2*(dot(dl.dir,result.normal))*result.normal);
-            //std::cout << "Reflected direction : (" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
+            std::cout << "Reflected direction : (" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
             dlReflected.startPos = result.P+mat3(0.00001)*result.normal;
             dlReflected.radius = dl.radius;
             return ShootRay(dlReflected, depth+1);
@@ -124,13 +131,22 @@ HitRecord intersectTriangle(Ray ray, Model *model, Mesh &mesh, Vertex A, Vertex 
     if(denom == 0.)
         return r;
 
-    float t = (-1)*(constant+dot(normal, o))/denom;
+    float t = -(constant+dot(normal, o))/denom;
     vec3 P = o+t*d; //the intersection point
+
 
     if(t < 0)
         return r;
+    /*if (model->hasMirror) {
 
-    //std::cout << "t:"<<t<<std::endl;
+    std::cout << "t:"<<t<<std::endl;
+    std::cout << "Ray origin :" << o.x << ", "<< o.y << ", "<< o.z << std::endl;
+    std::cout << "Ray direction :" << d.x << ", "<< d.y << ", "<< d.z << std::endl;
+    std::cout << "A :" << A.Position.x << ", "<< A.Position.y << ", "<< A.Position.z << std::endl;
+    std::cout << "B :" << B.Position.x << ", "<< B.Position.y << ", "<< B.Position.z << std::endl;
+    std::cout << "C :" << C.Position.x << ", "<< C.Position.y << ", "<< C.Position.z << std::endl;
+    std::cout << "P : " << P.x << ", " << P.y << ", " << P.z << std::endl;
+    }*/
 
     if(dot(cross(Bp-Ap, P-Ap), normal) >= 0 &&
        dot(cross(P-Ap, Cp-Ap), normal) >= 0 &&
@@ -178,11 +194,18 @@ void LightState::drawTubes(Shader shader)
     vector<LightRay> lr = this->getLightRays();
     vector<glm::mat4> models;
 
-    vector<DirectionalLight>pl = this->primaryLights;
+    //vector<DirectionalLight>pl = this->primaryLights;
+
     //First, the cylinder tops
-    for(int i = 0; i < pl.size(); i++)
+    for(int i = 0; i < lr.size(); i++)
     {
-        models.push_back(cylinderTop->cylinderTransform(pl[i].startPos, pl[i].endPos, pl[i].radius));
+        if(lr[i].depth == 0)
+        {
+            //std::cout << "PL (start) :" << lr[i].startPos.x << ", "<< lr[i].startPos.y << ", "<< lr[i].startPos.z << std::endl;
+            //std::cout << "PL (end):" << lr[i].endPos.x << ", "<< lr[i].endPos.y << ", "<< lr[i].endPos.z << std::endl;
+            models.push_back(cylinderTop->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
+        }
+
     }
     cylinderTop->DrawInstanced(shader, models);
 

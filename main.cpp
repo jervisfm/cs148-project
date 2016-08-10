@@ -38,14 +38,14 @@ int main()
     Shader borderShader("shader.vs", "bordershader.frag");
     Shader lightShader("lightray.vs", "lightray.frag");
     Scene* scene = new Scene();
-
+    LightState* ls = new LightState(scene);
+    ls->loadLights("map001_lights.map");
     //Load the scene
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
 
 
-    LightState* ls = new LightState(scene);
-    ls->loadLights("map001_lights.map");
+
 
 
     // Initialize controls
