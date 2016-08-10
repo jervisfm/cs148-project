@@ -161,8 +161,12 @@ void LightState::drawTubes(Shader shader, Model* cylinder, Model* cylinderTop)
     cylinderTop->DrawInstanced(shader, models);
 
     //Then, the cylinders for the primary lights
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
     cylinder->DrawInstanced(shader, models);
-
+    glCullFace(GL_BACK);
+    cylinder->DrawInstanced(shader, models);
+    glDisable(GL_CULL_FACE);
     //And now, the same for the reflected cylinders themselves.
     models.clear();
     for(int i = 0; i < lr.size(); i++)
