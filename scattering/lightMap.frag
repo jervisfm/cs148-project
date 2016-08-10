@@ -36,11 +36,12 @@ void main()
     //color = texture(myTexture, TextCoord);
     float distance = 0.10f + 10/pow(length(FragPos-lightPos),1);
     color = lightCheck ? vec4(1.0) : vec4(0.0);
+    color.rgb = distance*color.rgb;
     color.a = dot(color.rgb, vec3(0.33));          
     
     if(color.a < 0.1)
 	discard;
-    color.rgb = distance*color.rgb;
+    //color.rgb = distance*color.rgb;
     color.a = clamp(color.a, 0.0, 1.0);
 }
 
