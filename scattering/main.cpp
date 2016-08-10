@@ -40,7 +40,7 @@ GLfloat lastY  =  HEIGHT / 2.0;
 bool    keys[1024];
 
 // Light attributes
-glm::vec3 lightPos(4.0f, 4.0f, -2.0f), endLightPos(0, 0, -10);
+glm::vec3 lightPos(4.0f, 4.0f, -20.0f), endLightPos(0, 0, 10);
 float lightRadius = 1.50;
 
 // Deltatime
@@ -161,7 +161,7 @@ GLfloat *createVirtualPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 vie
 	for(int i = 0; i < numLattice; i++){
 	    //determine start/end points for new plane
 	    for(int j = 0; j < 4; j++){
-		planeVert[j] = finalCubeVert[j]+edgeFrustrum[j]*(float)/*(startT+(endT-startT)*/(deltaT*i);
+		planeVert[j] = finalCubeVert[j]+edgeFrustrum[j]*(float)/*(startT+(endT-startT)*/pow((deltaT*i),3);
 		//std::cout<<"Plane Vertices: "<<planeVert[j].z<<std::endl;
 
 	    }
