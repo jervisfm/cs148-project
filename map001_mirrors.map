@@ -1,3 +1,5 @@
 models/mirror.obj pos: (-1, 2.25, 2) scale: (1, 1, 1) rot: (1, 0, 0, 0)
 # Another mirror closer to the 3 mummy bodies.
-models/mirror.obj pos: (-3.60, 2.25, 6.66) scale: (1, 1, 1) rot: (1, 0, 0, 0)
+models/mirror.obj pos: (-4.40978, 2.25, 6.08932) scale: (1, 1, 1) rot: (1, 0, 0, 0)
+
+

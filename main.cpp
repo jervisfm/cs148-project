@@ -38,22 +38,18 @@ int main()
     Shader borderShader("shader.vs", "bordershader.frag");
     Shader lightShader("lightray.vs", "lightray.frag");
     Scene* scene = new Scene();
-
+    LightState* ls = new LightState(scene);
+    ls->loadLights("map001_lights.map");
     //Load the scene
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
-    Model* cylinder = Model::genCylinder(40);
-    cylinder->meshes[0].material.ambient = glm::vec3(0.2);
-    Model* cylinderTop = Model::genCylinderTop(40);
-    cylinderTop->meshes[0].material.ambient = glm::vec3(1.0);
 
 
-    LightState* ls = new LightState(scene);
-    ls->loadLights("map001_lights.map");
+
 
 
     // Initialize controls
-    Controls::init(window, scene, ls, glm::vec3(0.f,0.f,3.f));
+    Controls::init(window, scene, ls, glm::vec3(0.f,.75f,3.f));
 
     // Needs only to be called if the geometry changed, or if lights are added !
     ls->updateState();
@@ -85,7 +81,7 @@ int main()
 
         lightShader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-        ls->drawTubes(lightShader, cylinder, cylinderTop);
+        ls->drawTubes(lightShader);
 
         Controls::drawBorders(borderShader);
 
