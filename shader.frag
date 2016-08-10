@@ -51,8 +51,16 @@ vec4 ComputeDirectionalTubeLight(Light light, vec3 frag_position, vec3 frag_norm
       light_reduction_coefficient = 0.;
 
 
-  float diffuse_light_coefficient = light_reduction_coefficient * max(0.0, dot(normalize(Normal), surface_to_light_vector));
-  return vec4(diffuse_light_coefficient, diffuse_light_coefficient, diffuse_light_coefficient, 1.0);
+
+  float incidence_factor = max(0.0, dot(normalize(Normal), surface_to_light_vector));
+  float rev_incidence_factor = max(0.0, dot(normalize(Normal), (-1)*surface_to_light_vector));
+  float diffuse_light_coefficient = light_reduction_coefficient * incidence_factor;
+
+  float reflectance_spec = rev_incidence_factor*max(0, 1-pow(length(frag_position-light.position)/light.radius, 2));
+  vec4 reflectance_vec = vec4(vec3(reflectance_spec), 1.);
+
+
+  return reflectance_vec + vec4(vec3(diffuse_light_coefficient),1.0);
 }
 
 vec4 ComputeSpotLight(vec3 light_position, vec3 light_direction, vec3 light_cone_direction,

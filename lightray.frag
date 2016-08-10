@@ -16,19 +16,27 @@ uniform struct Material {
     vec3 specular;
     float shininess;
 } material;
+/*
+uniform struct lightSource {
+    vec3 pos;
+    float radius;
+}sources[16];
 
+uniform int nSources;
+*/
 void main()
 {
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
     //diffuse_texture_color.a = 0.1;
-    vec4 illuminance = vec4(0.3);
+    vec4 illuminance = vec4(material.ambient, 1.);
     vec4 ambient = vec4(0);
+    /*for(int i = 0; i < nSources; i++)
+    {
+        float d = length(FragPos-sources[i].pos);
+        illluminance += max(0., 1-d/li)
 
+    }*/
     color = diffuse_texture_color * illuminance + vec4(material.ambient, 0.) + ambient;
 
-    // Color overide to check what color texture loads with. Handy for testing but should
-    // be disabled otherwise.
-    //vec4 full_light_color = diffuse_texture_color + vec4(material.ambient, 1.) + ambient;
-    //color = full_light_color;
 }
 

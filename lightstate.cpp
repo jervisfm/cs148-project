@@ -64,6 +64,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
         lr.startPos = dl.startPos;
         lr.endPos = result.P;
         lr.radius = dl.radius;
+        lr.depth = depth;
         this->lightRays.push_back(lr);
         if (result.reflected && depth < 6)
         {
@@ -146,13 +147,32 @@ void LightState::bindLights(Shader shader) {
     }
 }
 
-void LightState::drawTubes(Shader shader, Model* m)
+void LightState::drawTubes(Shader shader, Model* cylinder, Model* cylinderTop)
 {
     vector<LightRay> lr = this->getLightRays();
     vector<glm::mat4> models;
+
+    vector<DirectionalLight>pl = this->primaryLights;
+    //First, the cylinder tops
+    for(int i = 0; i < pl.size(); i++)
+    {
+        models.push_back(cylinderTop->cylinderTransform(pl[i].startPos, pl[i].endPos, pl[i].radius));
+    }
+    cylinderTop->DrawInstanced(shader, models);
+
+    //Then, the cylinders for the primary lights
+    cylinder->DrawInstanced(shader, models);
+
+    //And now, the same for the reflected cylinders themselves.
+    models.clear();
     for(int i = 0; i < lr.size(); i++)
     {
-        models.push_back(m->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
+        if(lr[i].depth > 0)
+            models.push_back(cylinder->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
     }
-    m->DrawInstanced(shader, models);
+    cylinder->DrawInstanced(shader, models);
+
+
+
+
 }

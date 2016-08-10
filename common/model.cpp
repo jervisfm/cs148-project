@@ -86,8 +86,19 @@ void Model::processNode(aiNode* node, const aiScene* scene)
     }
 }
 
-Mesh Model::genVertices(float radius, unsigned precision)
+Texture loadSingleTexture(string textureDir, const char* textureName)
 {
+    Texture texture;
+    texture.id = TextureFromFile(textureName, textureDir);
+    texture.type = "texture_diffuse";
+    texture.path = textureDir+"/"+textureName;
+    return texture;
+}
+
+Mesh Model::genCylinderVertices(float radius, unsigned precision)
+{
+    string textureDir = "models";
+    const char* textureName = "light_falloff.png";
     vector<Vertex> vertices;
     vector<GLuint> indices;
     vector<Texture> textures;
@@ -112,14 +123,51 @@ Mesh Model::genVertices(float radius, unsigned precision)
 
     }
     // Texture
-    Texture texture;
-    texture.id = TextureFromFile("light_texture.png", "models");
-    texture.type = "texture_diffuse";
-    texture.path = "models/light_texture.png";
-    cout << texture.path.C_Str() << endl;
+    Texture texture = loadSingleTexture(textureDir, textureName);
     textures.push_back(texture);
     this->textures_loaded.push_back(texture);  // Add to loaded textures
     return Mesh(vertices, indices, textures);
+}
+
+Mesh Model::genCylinderTopVertices(float radius, unsigned precision) {
+    string textureDir = "models";
+    const char* textureName = "light_cookie.png";
+    vector<Vertex> vertices;
+    vector<GLuint> indices;
+    vector<Texture> textures;
+    float theta = 2*M_PI/(double)precision;
+    //First Vertex : center position
+    glm::vec3 normal = glm::vec3(0.,-1.,0.);
+    Vertex v;
+    v.Position = glm::vec3(0., 0., 0.);
+    v.Normal = normal;
+    v.TexCoords = glm::vec2(0.5,0.5);
+    for(int i = 0; i < precision; i++)
+    {
+       float x = cos(i*theta), z = sin(i*theta);
+       v.Position = glm::vec3(radius*x, 0.,radius*z);
+       v.TexCoords = glm::vec2(0.5+x/2.,0.5+z/2);
+       v.Normal = normal;
+       vertices.push_back(v);
+
+       //Also, add the correct indices
+       if (i < precision-2)
+       {
+           indices.push_back(0);
+           indices.push_back(i+1);
+
+           indices.push_back(i == precision-1 ? 1 : i+2);
+       }
+
+
+    }
+
+    // Texture
+    Texture texture = loadSingleTexture(textureDir, textureName);
+    textures.push_back(texture);
+    this->textures_loaded.push_back(texture);
+    return Mesh(vertices, indices, textures);
+
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)

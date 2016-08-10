@@ -42,13 +42,16 @@ int main()
     //Load the scene
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
-    Model* cylinder = Model::genCylinder(20);
+    Model* cylinder = Model::genCylinder(40);
+    cylinder->meshes[0].material.ambient = glm::vec3(0.2);
+    Model* cylinderTop = Model::genCylinderTop(40);
+    cylinderTop->meshes[0].material.ambient = glm::vec3(1.0);
 
 
     LightState* ls = new LightState(scene);
     DirectionalLight dl;
-    dl.dir = glm::vec3(-1.5,0.3,-.5);
-    dl.startPos = glm::vec3(4.1, 0.0, 3.75);
+    dl.dir = glm::vec3(-1.5,-0.5,-.5);
+    dl.startPos = glm::vec3(4.1, 2.0, 3.75);
     dl.radius = 1.55;
     ls->addPrimaryLight(dl);
 
@@ -84,7 +87,7 @@ int main()
         scene->drawScene();
 
         lightShader.Use();
-        ls->drawTubes(lightShader, cylinder);
+        ls->drawTubes(lightShader, cylinder, cylinderTop);
 
         Controls::drawBorders(borderShader);
 

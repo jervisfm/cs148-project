@@ -38,12 +38,24 @@ class Model
         static Model* genCylinder(unsigned precision)
         {
             Model* m = new Model();
-            m->meshes.push_back(m->genVertices(1.0, precision));
+            m->meshes.push_back(m->genCylinderVertices(1.0, precision));
             m->pathName = "";
             m->modelMatrix = glm::mat4(1.);
             m->isCylinder = true;
             return m;
         }
+
+        static Model* genCylinderTop(unsigned precision)
+        {
+            Model* m = new Model();
+            m->meshes.push_back(m->genCylinderTopVertices(1.0, precision));
+            m->pathName = "";
+            m->modelMatrix = glm::mat4(1.);
+            m->isCylinder = true;
+            return m;
+        }
+
+
 
         glm::mat4 cylinderTransform(glm::vec3 start, glm::vec3 end, double radius);
 
@@ -87,6 +99,7 @@ class Model
         vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
                                              string typeName);
         vector<Texture> textures_loaded;
-        Mesh genVertices(float radius, unsigned precision);
+        Mesh genCylinderVertices(float radius, unsigned precision);
+        Mesh genCylinderTopVertices(float radius, unsigned precision);
 };
 #endif // MODEL_H
