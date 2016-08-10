@@ -31,10 +31,10 @@ GLint TextureFromFile(const char* path, string directory)
 
 void Model::Draw(Shader shader)
 {
-    if (Controls::getActiveMirror() == this)
-        glStencilMask(0xFF);
-    else
+    if (this->pathName.find("pyramid") != string::npos)
         glStencilMask(0x00);
+    else
+        glStencilMask(0xFF);
 
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
     for(GLuint i = 0; i < this->meshes.size(); i++)
@@ -95,10 +95,10 @@ Texture loadSingleTexture(string textureDir, const char* textureName)
     return texture;
 }
 
-Mesh Model::genCylinderVertices(float radius, unsigned precision)
+Mesh Model::genCylinderVertices(float radius, unsigned precision, const char* textureName)
 {
     string textureDir = "models";
-    const char* textureName = "light_falloff.png";
+    //const char* textureName = "light_falloff2.png";
     vector<Vertex> vertices;
     vector<GLuint> indices;
     vector<Texture> textures;

@@ -173,7 +173,7 @@ void LightState::bindLights(Shader shader) {
     }
 }
 
-void LightState::drawTubes(Shader shader, Model* cylinder, Model* cylinderTop)
+void LightState::drawTubes(Shader shader)
 {
     vector<LightRay> lr = this->getLightRays();
     vector<glm::mat4> models;
@@ -186,23 +186,22 @@ void LightState::drawTubes(Shader shader, Model* cylinder, Model* cylinderTop)
     }
     cylinderTop->DrawInstanced(shader, models);
 
-    //Then, the cylinders for the primary lights
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    cylinder->DrawInstanced(shader, models);
-    glCullFace(GL_BACK);
-    cylinder->DrawInstanced(shader, models);
-    glDisable(GL_CULL_FACE);
     //And now, the same for the reflected cylinders themselves.
-    models.clear();
+    vector<glm::mat4> reflectedModels;
     for(int i = 0; i < lr.size(); i++)
     {
         if(lr[i].depth > 0)
-            models.push_back(cylinder->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
+            reflectedModels.push_back(cylinderSecondary->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
     }
-    cylinder->DrawInstanced(shader, models);
-
-
-
+    //Then, the cylinders for the primary lights and secondary lights
+    //The order of the calls is important
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    cylinderPrimary->DrawInstanced(shader, models);
+    cylinderSecondary->DrawInstanced(shader, reflectedModels);
+    glCullFace(GL_BACK);
+    cylinderPrimary->DrawInstanced(shader, models);
+    cylinderSecondary->DrawInstanced(shader, reflectedModels);
+    glDisable(GL_CULL_FACE);
 
 }
