@@ -35,10 +35,10 @@ class Model
         }
         Model() {}
 
-        static Model* genCylinder(unsigned precision)
+        static Model* genCylinder(unsigned precision, const char* texture_name)
         {
             Model* m = new Model();
-            m->meshes.push_back(m->genCylinderVertices(1.0, precision));
+            m->meshes.push_back(m->genCylinderVertices(1.0, precision, texture_name));
             m->pathName = "";
             m->modelMatrix = glm::mat4(1.);
             m->isCylinder = true;
@@ -99,7 +99,7 @@ class Model
         vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
                                              string typeName);
         vector<Texture> textures_loaded;
-        Mesh genCylinderVertices(float radius, unsigned precision);
+        Mesh genCylinderVertices(float radius, unsigned precision, const char*);
         Mesh genCylinderTopVertices(float radius, unsigned precision);
 };
 #endif // MODEL_H

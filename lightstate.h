@@ -32,7 +32,20 @@ struct Ray {
 class LightState
 {
 public:
-    LightState(Scene* s) : scene(s) {}
+    LightState(Scene* s) : scene(s) {
+        //Create the models used for the cylinders
+        unsigned precision = 40;
+
+        this->cylinderPrimary  = Model::genCylinder(precision, "light_falloff.png");
+        this->cylinderPrimary->meshes[0].material.ambient = glm::vec3(0.2);
+
+        this->cylinderSecondary = Model::genCylinder(precision, "light_falloff2.png");
+        this->cylinderSecondary->meshes[0].material.ambient = glm::vec3(0.4);
+
+        this->cylinderTop = Model::genCylinderTop(precision);
+        cylinderTop->meshes[0].material.ambient = glm::vec3(1.0);
+
+    }
 
     std::vector<LightRay> getLightRays() {
         return this->lightRays;
@@ -48,7 +61,7 @@ public:
     }
 
     void updateState();
-    void drawTubes(Shader shader, Model* cylinder, Model* cylinderTop);
+    void drawTubes(Shader shader);
 
     void bindLights(Shader shader);
     std::vector<DirectionalLight> primaryLights;
@@ -60,6 +73,7 @@ private:
     std::vector<DirectionalLight> directionalLights;
 
     DirectionalLight ShootRay(DirectionalLight dl, unsigned depth);
+    Model *cylinderTop, *cylinderPrimary, *cylinderSecondary;
 };
 
 #endif // LIGHTSTATE_H
