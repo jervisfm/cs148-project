@@ -49,11 +49,8 @@ int main()
 
 
     LightState* ls = new LightState(scene);
-    DirectionalLight dl;
-    dl.dir = glm::vec3(-1.5,-0.5,-.5);
-    dl.startPos = glm::vec3(4.1, 2.0, 3.75);
-    dl.radius = 1.55;
-    ls->addPrimaryLight(dl);
+    ls->loadLights("map001_lights.map");
+
 
     // Initialize controls
     Controls::init(window, scene, ls, glm::vec3(0.f,0.f,3.f));
