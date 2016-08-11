@@ -17,6 +17,7 @@
 #include "common/controls.h"
 #include "lightstate.h"
 #include "scene.h"
+#include "scattering/scattering.h"
 #define GLM_FORCE_RADIANS
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -26,7 +27,35 @@
 // Other Libs
 #include <SOIL.h>
 
+void RenderQuad(){
+    GLuint quadVAO, quadVBO;
+    GLfloat quadVertices[] = {   // Vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // Positions   // TexCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
 
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    	};
+
+   	glGenVertexArrays(1, &quadVAO);
+    	glGenBuffers(1, &quadVBO);
+    	glBindVertexArray(quadVAO);
+   	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    	glEnableVertexAttribArray(0);
+    	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+    	glEnableVertexAttribArray(1);
+    	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+    
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0); 
+    glDeleteVertexArrays(1, &quadVAO);
+    glDeleteBuffers(1, &quadVBO);
+}
 
 // The MAIN function, from here we start our application and run our Game loop
 int main()
@@ -37,12 +66,18 @@ int main()
     Shader shader("shader.vs", "shader.frag");
     Shader borderShader("shader.vs", "bordershader.frag");
     Shader lightShader("lightray.vs", "lightray.frag");
+    Shader finalShader("final.vs", "final.frag");
+    Shader lightingShader("scattering/lightMap.vs", "scattering/lightMap.frag");
+    Shader gaussianShader("scattering/gaussian.vs", "scattering/gaussian.frag"); 
+    Shader finalPass("scattering/finalPass.vs", "scattering/finalPass.frag");	
     Scene* scene = new Scene();
     LightState* ls = new LightState(scene);
     ls->loadLights("map001_lights.map");
     //Load the scene
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
+
+    Scattering* lScattering = new Scattering();
 
 
 
@@ -77,14 +112,31 @@ int main()
 
         shader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        scene->drawScene();
+	//scene texture in gl_TEXTURE1        
+	GLuint sceneTexture = scene->drawScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        lightShader.Use();
+        //lightShader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-        ls->drawTubes(lightShader);
+        //ls->drawTubes(lightShader);
 
         Controls::drawBorders(borderShader);
+  	//lightTexture store in GL_TEXTURE2
+        GLuint lightTexture = lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
+     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//Final combination of scene and Light
+	finalShader.Use();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, lightTexture);
+	glUniform1i(glGetUniformLocation(finalShader.Program, "lightTexture"), 0);
+	
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, sceneTexture);
+	glUniform1i(glGetUniformLocation(finalShader.Program, "sceneTexture"), 1);
+	
+	RenderQuad();
 
         // Swap the buffers
         glfwSwapBuffers(window);

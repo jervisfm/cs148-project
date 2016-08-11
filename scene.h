@@ -22,7 +22,7 @@ public:
         SceneElement se = {s,m};
         this->models.push_back(se);
     }
-    void drawScene();
+    GLuint drawScene();
     bool nextTriangle(Vertex*, Vertex*, Vertex*);
     void resetTriangleIterator();
     void addMirror(Model *m);

@@ -1,14 +1,52 @@
 #include "scene.h"
+#include "common/controls.h"
 #include <stdio.h>
 
 using namespace std;
-void Scene::drawScene() {
+
+GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
+	//frame_texture is a pointer to the frame buffer and texture buffer numbers. 
+    
+    //http://learnopengl.com/code_viewer.php?code=advanced/framebuffers_screen_texture
+    glGenFramebuffers(1, &frame_texture[0]);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_texture[0]);  
+    // Create a color attachment texture
+    //GLuint textureColorBuffer; 
+    glGenTextures(1, &frame_texture[1]);
+    glBindTexture(GL_TEXTURE_2D, frame_texture[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frame_texture[1], 0);
+    // Create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+    GLuint rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // Use a single renderbuffer object for both a depth AND stencil buffer.
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // Now actually attach it
+    // Now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return frame_texture;
+}
+
+GLuint Scene::drawScene() {
     // Draw the scene, update the stencil buffer
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    //0 index is Frame Buffer, 1 is the texture buffer
+    GLuint sceneBuffers[2];
+    GLuint *tempBuffer = createFrameBuffer(sceneBuffers, Controls::getScreenWidth(), Controls::getScreenHeight());
+    glBindFramebuffer(GL_FRAMEBUFFER, sceneBuffers[0]);
     for (int i = 0; i < models.size(); i++) {
         SceneElement se = models[i];
         se.m->Draw(*(se.shader));
     }
+    //return the texture Buffer.
+    return sceneBuffers[1];
 }
 
 bool Scene::nextTriangle(Vertex *A, Vertex *B, Vertex *C) {

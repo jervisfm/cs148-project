@@ -33,7 +33,7 @@ void main()
 {
     bool lightCheck = withinLight(FragPos);
     //color = texture(myTexture, TextCoord);
-    float distance = 0.10f + 10/pow(length(FragPos-lightPos),1);
+    float distance = 0.10f + 1/pow(length(FragPos-lightPos),2);
     color = lightCheck ? vec4(1.0) : vec4(0.0);
     color.rgb = distance*color.rgb;
     color.a = dot(color.rgb, vec3(0.33));          

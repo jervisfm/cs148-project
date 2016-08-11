@@ -30,7 +30,6 @@ int Scattering::numLattice = 0;
 int Scattering::row = 0;
 GLuint Scattering::quadVAO = 0, Scattering::quadVBO = 0, Scattering::planesVAO = 0, Scattering::planesVBO = 0;
 GLuint Scattering::windowHeight = 0, Scattering::windowWidth = 0;
-Shader Scattering::lightingShader("lightMap.vs", "lightMap.frag"), Scattering::gaussianShader("gaussian.vs", "gaussian.frag"), Scattering::finalShader("finalPass.vs", "finalPass.frag");
 GLuint Scattering::pingpongFBO[2] = {0,0}, Scattering::pingpongColorbuffers[2]={0,0}, Scattering::lightRenderFBO[2]={0,0};
 
 glm::vec3 scale3(glm::vec3 vector, float scalar){
@@ -196,7 +195,7 @@ GLfloat* Scattering::createVirtualPlanes(glm::mat4 view, glm::mat4 projection, g
         return arr;
 }
 
-GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
+static GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
 	//frame_texture is a pointer to the frame buffer and texture buffer numbers. 
     
     //http://learnopengl.com/code_viewer.php?code=advanced/framebuffers_screen_texture
@@ -257,7 +256,7 @@ void Scattering::createVirtPlanes(glm::mat4 view, glm::mat4 projection, glm::vec
 }
 
 // The MAIN function, from here we start the application and run the game loop
-void Scattering::ScatterLight(LightState* ls)
+GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader gaussianShader, Shader finalShader)
 {
     
    
@@ -355,10 +354,11 @@ void Scattering::ScatterLight(LightState* ls)
 
         //BIND TO DEFAULT FRAME BUFFER
 	finalShader.Use();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);	
+	glBindFramebuffer(GL_FRAMEBUFFER, lightRenderFBO[0]);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);	
 	RenderQuad();
+   	return lightRenderFBO[1];
 	
         // Swap the screen buffers
     //    glfwSwapBuffers(window);
