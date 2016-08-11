@@ -26,8 +26,13 @@ void main()
     // so downscale normal matrix to 3x3 to get rid of translation
     // component.
     mat3 normalMatrix = mat3(transpose(inverse(model)));
+    float scaleY = length(model[1]);
     Normal = normalMatrix * normal;
 
     TexCoords = texCoords;
+    /*if (TexCoords[1] == 1.)
+    {
+        TexCoords[1] *= scaleY/5.;
+    }*/
 }
 

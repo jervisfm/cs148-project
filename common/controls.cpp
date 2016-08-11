@@ -12,11 +12,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-GLfloat Controls::lastX = 400, Controls::lastY = 300;
+GLfloat Controls::lastX = 512, Controls::lastY = 384;
 GLFWwindow* Controls::window;
 Scene* Controls::scene;
 bool Controls::firstMouse = true;
-GLuint Controls::screenWidth = 800, Controls::screenHeight = 600;
+GLuint Controls::screenWidth = 1024, Controls::screenHeight = 768;
 GLfloat Controls::deltaTime = 0.0f, Controls::lastFrame = 0.0f;
 bool Controls::keys[1024];
 Camera Controls::camera;
@@ -163,7 +163,7 @@ void Controls::Do_Movement()
     //Also, change the position of the active mirror
     if((keys[GLFW_KEY_F1] || keys[GLFW_KEY_F2]) && activeMirror != -1)
     {
-        float degrees = keys[GLFW_KEY_F1] ? 3.f : -3.f;
+        float degrees = keys[GLFW_KEY_F1] ? 2.f : -2.f;
         degrees *= deltaTime;
         Model *mirror = scene->getMirrors()[activeMirror];
         glm::mat4 mat = mirror->getModelMatrix();
@@ -171,6 +171,76 @@ void Controls::Do_Movement()
         mirror->setModelMatrix(mat*rotate);
         ls->updateState();
     }
+
+    /* Rotate all mummies towards the closest light source */
+    /*vector<DirectionalLight> dl = ls->getDirectionalLights();
+    for(int i = 0; i < models.size(); i++)
+    {
+        Model* m = models[i].m;
+        if(m->hasMirror || m->pathName.find("pyramid") < string::npos) {
+            continue;
+        }
+        glm::vec4 pos4 = m->getModelMatrix()*glm::vec4(0.,0.,0.,1.);
+        glm::vec3 pos = glm::vec3(pos4) / pos4.w;
+        // m is supposed to be a mummy
+        int nearestLight = -1;
+        float nearestDist = 1e10;
+        for (int j = 0; j < dl.size(); j++)
+        {
+            float dist = glm::length(pos-dl[j].endPos);
+            if (dist < nearestDist)
+            {
+                nearestLight = j;
+                nearestDist = dist;
+            }
+        }
+
+        //We have found the nearest light. Now, rotate towards it
+        // by default : model looks in direction (0,0,1)
+        glm::vec3 viewDirection = glm::normalize(glm::vec3(m->getModelMatrix()*glm::vec4(0.,0.,1.,0.)));
+        glm::vec3 crossProd = glm::cross(viewDirection, dl[nearestLight].endPos);
+        if (glm::length(crossProd) > 0.00001)
+        {
+            float angle = 0.3f*deltaTime;
+            //if(crossProd.y < 0.)
+            //    angle *= (-1.);
+            glm::mat4 rotate = glm::rotate(glm::mat4(1.0), angle, crossProd);
+            m->setModelMatrix(m->getModelMatrix()*rotate);
+        }
+
+    }*/
+    //Turn towards the camera and go towards the player
+    for(int i = 0; i < models.size(); i++)
+    {
+        Model* m = models[i].m;
+        if(m->hasMirror || m->pathName.find("pyramid") < string::npos) {
+            continue;
+        }
+        glm::vec4 pos4 = m->getModelMatrix()*glm::vec4(0.,0.,0.,1.);
+        glm::vec3 pos = glm::vec3(pos4) / pos4.w;
+        pos.y = 0.;
+        //Turn to the camera
+        glm::vec3 viewDirection = glm::normalize(glm::vec3(m->getModelMatrix()*glm::vec4(0.,0.,1.,0.)));
+        glm::vec3 toCamera = (camera.Position - pos);
+        toCamera.y = 0;
+        toCamera = glm::normalize(toCamera);
+        float angle = acos(glm::dot(viewDirection, toCamera));
+        glm::vec3 crossProd = glm::cross(viewDirection, toCamera);
+        if(abs(crossProd.y) > 0.01)
+        {
+            if(crossProd.y < 0)
+                angle *= -1;
+            //std::cout << "Angle : " << angle << std::endl;
+            glm::mat4 rotate = glm::rotate(glm::mat4(1.0), angle, glm::vec3(0.,1,0));
+            m->setModelMatrix(m->getModelMatrix()*rotate);
+        }
+
+        //Go towards the player
+        //glm::mat4 translate = glm::translate(glm::mat4(1.0), toCamera*deltaTime);
+        //m->setModelMatrix(translate*m->getModelMatrix());
+
+    }
+
 }
 
 float Controls::distanceToCamera(Model* m)

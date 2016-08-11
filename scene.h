@@ -29,6 +29,7 @@ public:
     vector<Model*> getMirrors();
     void loadMap(const char* filename, Shader *s);
     void loadMirrors(const char* filename, Shader *s);
+    int totalTextures();
 private:
     unsigned modelIndex=0, meshIndex=0, indexIndex=0;
     vector<Model*> mirrors;

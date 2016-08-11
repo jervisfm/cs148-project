@@ -20,8 +20,8 @@ GLint TextureFromFile(const char* path, string directory)
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Parameters
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -112,8 +112,8 @@ Mesh Model::genCylinderVertices(float radius, unsigned precision, const char* te
             v.Normal = glm::vec3(cos(i*theta), 0., sin(i*theta));
             float x = (double)i/(double)precision;
             float u = 2*x < 1. ? 2*x : 2. - 2*x;
-            v.TexCoords = glm::vec2(u, j); //TODO : change it
-            std::cout << "UV : " << v.TexCoords[0] << ", " << v.TexCoords[1] << std::endl;
+            v.TexCoords = glm::vec2(u, j);
+            //std::cout << "UV : " << v.TexCoords[0] << ", " << v.TexCoords[1] << std::endl;
             vertices.push_back(v);
             for (int k = 0; k < 3; k++)
             {

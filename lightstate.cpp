@@ -23,10 +23,10 @@ void LightState::loadLights(const std::string &light_map_file) {
         glm::vec3 position, direction;
         float radius;
         if (sscanf(file_line.c_str(), "pos: (%f, %f, %f) direction: (%f, %f, %f) radius: %f", &position.x, &position.y, &position.z, &direction.x, &direction.y, &direction.z, &radius) > 0) {
-            std::cout << "Light dir: (" << direction.x << "," << direction.y << "," << direction.z << ")" << std::endl;
-            std::cout << "Light Pos: (" << position.x << "," << position.y << "," << position.z << ")" << std::endl;
-            std::cout << "Light Radius: " << radius;
-            std::cout << "-----" << endl;
+            //std::cout << "Light dir: (" << direction.x << "," << direction.y << "," << direction.z << ")" << std::endl;
+            //std::cout << "Light Pos: (" << position.x << "," << position.y << "," << position.z << ")" << std::endl;
+            //std::cout << "Light Radius: " << radius;
+            //std::cout << "-----" << endl;
             DirectionalLight directional_light;
             directional_light.dir = direction;
             directional_light.startPos = position;
@@ -53,9 +53,9 @@ void LightState::updateState()
 DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
     HitRecord result, r;
     result.t = -1;
-    std::cout << "Shooting ray" << std::endl;
+    //std::cout << "Shooting ray" << std::endl;
     unsigned nModels = this->scene->models.size();
-    std::cout << nModels << " models in the scene" << endl;
+    //std::cout << nModels << " models in the scene" << endl;
     for (int i = 0; i < nModels; i++)
     {
         Model* model = this->scene->models[i].m;
@@ -83,7 +83,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
                 //std::cout << "intersect with a triangle ? " << r.t<< std::endl;
                 if (r.t > 0.000001 && (r.t < result.t || result.t < 0.))
                 {
-                    std::cout << "Intersection" << std::endl;
+                    //std::cout << "Intersection" << std::endl;
                     result = r;
                 }
             }
@@ -103,7 +103,7 @@ DirectionalLight LightState::ShootRay(DirectionalLight dl, unsigned depth) {
         {
             DirectionalLight dlReflected;
             dlReflected.dir = normalize(dl.dir - 2*(dot(dl.dir,result.normal))*result.normal);
-            std::cout << "Reflected direction : (" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
+            //std::cout << "Reflected direction : (" << dlReflected.dir.x << ","<< dlReflected.dir.y << "," << dlReflected.dir.z << ")"<<std::endl;
             dlReflected.startPos = result.P+mat3(0.00001)*result.normal;
             dlReflected.radius = dl.radius;
             return ShootRay(dlReflected, depth+1);
@@ -218,10 +218,12 @@ void LightState::drawTubes(Shader shader)
     }
     //Then, the cylinders for the primary lights and secondary lights
     //The order of the calls is important
+
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     cylinderPrimary->DrawInstanced(shader, models);
     cylinderSecondary->DrawInstanced(shader, reflectedModels);
+
     glCullFace(GL_BACK);
     cylinderPrimary->DrawInstanced(shader, models);
     cylinderSecondary->DrawInstanced(shader, reflectedModels);

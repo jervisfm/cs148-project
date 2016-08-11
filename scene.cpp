@@ -2,6 +2,8 @@
 #include <stdio.h>
 
 using namespace std;
+
+
 void Scene::drawScene() {
     // Draw the scene, update the stencil buffer
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -129,4 +131,18 @@ void Scene::loadMirrors(const char *filename, Shader* s)
             this->addMirror(model);
         }
     }
+}
+
+int Scene::totalTextures() {
+    int res = 0;
+    for(int i = 0; i < this->models.size(); i++)
+    {
+        Model* m = this->models[i].m;
+        for(int j = 0; j < m->meshes.size(); j++)
+        {
+            Mesh mesh = m->meshes[j];
+            res += mesh.textures.size();
+        }
+    }
+    return res;
 }

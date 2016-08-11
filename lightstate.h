@@ -38,9 +38,10 @@ public:
 
         this->cylinderPrimary  = Model::genCylinder(precision, "light_falloff.png");
         this->cylinderPrimary->meshes[0].material.ambient = glm::vec3(0.2);
-
+        this->cylinderPrimary->meshes[0].material.alphaTest = -1.;
         this->cylinderSecondary = Model::genCylinder(precision, "light_falloff2.png");
         this->cylinderSecondary->meshes[0].material.ambient = glm::vec3(0.4);
+        this->cylinderSecondary->meshes[0].material.alphaTest = 0.01;
 
         this->cylinderTop = Model::genCylinderTop(precision);
         cylinderTop->meshes[0].material.ambient = glm::vec3(1.0);

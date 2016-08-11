@@ -70,6 +70,7 @@ void Mesh::bindTextures(Shader shader) {
     }
     glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
     glUniform3fv(glGetUniformLocation(shader.Program, "material.ambient"),1, glm::value_ptr(this->material.ambient));
+    glUniform1f(glGetUniformLocation(shader.Program, "material.alphaTest"), this->material.alphaTest);
 
 }
 

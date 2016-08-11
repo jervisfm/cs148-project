@@ -15,6 +15,7 @@ uniform struct Material {
     vec3 diffuse;
     vec3 specular;
     float shininess;
+    float alphaTest;
 } material;
 /*
 uniform struct lightSource {
@@ -37,7 +38,9 @@ void main()
 
     }*/
 
-    color = diffuse_texture_color * illuminance + vec4(material.ambient, 0.) + ambient;
+    color = diffuse_texture_color * illuminance + /*vec4(material.ambient, 0.)*/ + ambient;
+    if(color.a <= material.alphaTest)
+        discard;
 
 }
 

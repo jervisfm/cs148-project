@@ -43,6 +43,7 @@ int main()
     //Load the scene
     scene->loadMap("map001.map", &shader);
     scene->loadMirrors("map001_mirrors.map", &shader);
+    std::cout << scene->totalTextures() << std::endl;
 
 
 
