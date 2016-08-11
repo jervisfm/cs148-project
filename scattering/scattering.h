@@ -23,7 +23,7 @@ public:
 	lightRenderFBO[0] = lightRenderFBO[1] = 0;
     
     }
-    static void ScatterLight(LightState *ls, Shader lightingShader, Shader gaussianShader, Shader finalShader);
+    static GLuint ScatterLight(LightState *ls, Shader lightingShader, Shader gaussianShader, Shader finalShader);
     
 
 private:

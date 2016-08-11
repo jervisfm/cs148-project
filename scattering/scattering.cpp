@@ -259,7 +259,7 @@ void Scattering::createVirtPlanes(glm::mat4 view, glm::mat4 projection, glm::vec
 }
 
 // The MAIN function, from here we start the application and run the game loop
-void Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader gaussianShader, Shader finalShader)
+GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader gaussianShader, Shader finalShader)
 {
     
    
@@ -352,16 +352,16 @@ void Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader gaus
             if (first_iteration)
                 first_iteration = false;
         }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//glBindTexture(GL_TEXTURE_2D, lFrameBuffer[1]);   
 
         //BIND TO DEFAULT FRAME BUFFER
 	finalShader.Use();
-	//glBindFramebuffer(GL_FRAMEBUFFER, lightRenderFBO[0]);
+	glBindFramebuffer(GL_FRAMEBUFFER, lightRenderFBO[0]);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);	
 	RenderQuad();
-   	//return lightRenderFBO[1];
+   	return lightRenderFBO[1];
 	
         // Swap the screen buffers
     //    glfwSwapBuffers(window);

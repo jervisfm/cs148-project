@@ -124,22 +124,21 @@ int main()
 
         //Controls::drawBorders(borderShader);
   	//lightTexture store in GL_TEXTURE2
-//        GLuint lightTexture = lScattering->
-	lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
-  //   	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        GLuint lightTexture = lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
+     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Final combination of scene and Light
-	//finalShader.Use();
+	finalShader.Use();
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, lightTexture);
-	//glUniform1i(glGetUniformLocation(finalShader.Program, "lightTexture"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, lightTexture);
+	glUniform1i(glGetUniformLocation(finalShader.Program, "lightTexture"), 0);
 	
 	//glActiveTexture(GL_TEXTURE0);
 	//glBindTexture(GL_TEXTURE_2D, sceneTexture);
 	//glUniform1i(glGetUniformLocation(finalShader.Program, "sceneTexture"), 0);
 	
-	//RenderQuad();
+	RenderQuad();
 
         // Swap the buffers
         glfwSwapBuffers(window);
