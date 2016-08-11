@@ -26,6 +26,9 @@
 #include "../common/controls.h"
 #include "../lightstate.h"
 
+// Import symbols from GLM
+using namespace glm;
+
 int Scattering::numLattice = 0;
 int Scattering::row = 0;
 GLuint Scattering::quadVAO = 0, Scattering::quadVBO = 0, Scattering::planesVAO = 0, Scattering::planesVBO = 0;
