@@ -34,19 +34,19 @@ GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
     return frame_texture;
 }
 
-GLuint Scene::drawScene() {
+void Scene::drawScene() {
     // Draw the scene, update the stencil buffer
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     //0 index is Frame Buffer, 1 is the texture buffer
-    GLuint sceneBuffers[2];
-    GLuint *tempBuffer = createFrameBuffer(sceneBuffers, Controls::getScreenWidth(), Controls::getScreenHeight());
-    glBindFramebuffer(GL_FRAMEBUFFER, sceneBuffers[0]);
+    //GLuint sceneBuffers[2];
+    //GLuint *tempBuffer = createFrameBuffer(sceneBuffers, Controls::getScreenWidth(), Controls::getScreenHeight());
+    //glBindFramebuffer(GL_FRAMEBUFFER, sceneBuffers[0]);
     for (int i = 0; i < models.size(); i++) {
         SceneElement se = models[i];
         se.m->Draw(*(se.shader));
     }
     //return the texture Buffer.
-    return sceneBuffers[1];
+    //return sceneBuffers[1];
 }
 
 bool Scene::nextTriangle(Vertex *A, Vertex *B, Vertex *C) {

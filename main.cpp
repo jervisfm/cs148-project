@@ -113,7 +113,8 @@ int main()
         shader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//scene texture in gl_TEXTURE1        
-	GLuint sceneTexture = scene->drawScene();
+	//GLuint sceneTexture = 
+	scene->drawScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //lightShader.Use();
@@ -122,21 +123,21 @@ int main()
 
         Controls::drawBorders(borderShader);
   	//lightTexture store in GL_TEXTURE2
-        GLuint lightTexture = lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
-     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //GLuint lightTexture = lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
+     	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Final combination of scene and Light
-	finalShader.Use();
+	//finalShader.Use();
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, lightTexture);
-	glUniform1i(glGetUniformLocation(finalShader.Program, "lightTexture"), 0);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, lightTexture);
+	//glUniform1i(glGetUniformLocation(finalShader.Program, "lightTexture"), 0);
 	
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, sceneTexture);
-	glUniform1i(glGetUniformLocation(finalShader.Program, "sceneTexture"), 1);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, sceneTexture);
+	//glUniform1i(glGetUniformLocation(finalShader.Program, "sceneTexture"), 0);
 	
-	RenderQuad();
+	//RenderQuad();
 
         // Swap the buffers
         glfwSwapBuffers(window);
