@@ -7,4 +7,5 @@ uniform sampler2D image;
 void main()
 {             
     color = texture(image, TextCoord);
+
 }

@@ -102,7 +102,7 @@ void main()
 
     // Color overide to check what color texture loads with. Handy for testing but should
     // be disabled otherwise.
-    //vec4 full_light_color = diffuse_texture_color + vec4(material.ambient, 1.) + ambient;
-    //color = full_light_color;
+    vec4 full_light_color = diffuse_texture_color + vec4(material.ambient, 1.) + ambient;
+    color = full_light_color;
 }
 

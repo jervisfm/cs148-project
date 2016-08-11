@@ -26,9 +26,10 @@
 
 // Other Libs
 #include <SOIL.h>
-
+GLuint quadVAO = 0;
+GLuint quadVBO;
 void RenderQuad(){
-    GLuint quadVAO, quadVBO;
+    if(quadVAO == 0){
     GLfloat quadVertices[] = {   // Vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
         // Positions   // TexCoords
         -1.0f,  1.0f,  0.0f, 1.0f,
@@ -49,12 +50,12 @@ void RenderQuad(){
     	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
     	glEnableVertexAttribArray(1);
     	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-    
+    }
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0); 
-    glDeleteVertexArrays(1, &quadVAO);
-    glDeleteBuffers(1, &quadVBO);
+    //glDeleteVertexArrays(1, &quadVAO);
+    //glDeleteBuffers(1, &quadVBO);
 }
 
 // The MAIN function, from here we start our application and run our Game loop
@@ -79,10 +80,9 @@ int main()
 
     Scattering* lScattering = new Scattering();
 
-
-
-
-
+    GLuint sceneBuffers[2];
+    GLuint *tempBuffer = scene->createFrameBuffer(sceneBuffers, Controls::getScreenWidth(), Controls::getScreenHeight());
+   
     // Initialize controls
     Controls::init(window, scene, ls, glm::vec3(0.f,.75f,3.f));
 
@@ -110,19 +110,18 @@ int main()
         Controls::bindState(lightShader);
 
     
-
-        //shader.Use();
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneBuffers[0]);
+        shader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//scene texture in gl_TEXTURE1        
-	//GLuint sceneTexture = 
-	//scene->drawScene();
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	scene->drawScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //lightShader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
         //ls->drawTubes(lightShader);
-
-        //Controls::drawBorders(borderShader);
+	
+        Controls::drawBorders(borderShader);
   	//lightTexture store in GL_TEXTURE2
         GLuint lightTexture = lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
      	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -131,12 +130,18 @@ int main()
 	finalShader.Use();
 
 	glActiveTexture(GL_TEXTURE0);
+        glEnable(GL_TEXTURE_2D);
+	GLuint lightLoc = glGetUniformLocation(finalShader.Program, "lightTexture");
+        std::cout<<"Light Location: "<<lightLoc<<std::endl;		
+	glUniform1i(lightLoc, 0);
 	glBindTexture(GL_TEXTURE_2D, lightTexture);
-	glUniform1i(glGetUniformLocation(finalShader.Program, "lightTexture"), 0);
 	
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, sceneTexture);
-	//glUniform1i(glGetUniformLocation(finalShader.Program, "sceneTexture"), 0);
+	glActiveTexture(GL_TEXTURE1);
+	glEnable(GL_TEXTURE_2D);
+	GLuint sceneLocation = glGetUniformLocation(finalShader.Program, "sceneTexture");
+        std::cout<<"Scene Location: "<<sceneLocation<<std::endl;	
+	glUniform1i(sceneLocation, 1);
+	glBindTexture(GL_TEXTURE_2D, sceneBuffers[1]);
 	
 	RenderQuad();
 

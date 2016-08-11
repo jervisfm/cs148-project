@@ -4,7 +4,7 @@
 
 using namespace std;
 
-GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
+GLuint* Scene::createFrameBuffer(GLuint* frame_texture, int width, int height){
 	//frame_texture is a pointer to the frame buffer and texture buffer numbers. 
     
     //http://learnopengl.com/code_viewer.php?code=advanced/framebuffers_screen_texture
@@ -38,15 +38,11 @@ void Scene::drawScene() {
     // Draw the scene, update the stencil buffer
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     //0 index is Frame Buffer, 1 is the texture buffer
-    //GLuint sceneBuffers[2];
-    //GLuint *tempBuffer = createFrameBuffer(sceneBuffers, Controls::getScreenWidth(), Controls::getScreenHeight());
-    //glBindFramebuffer(GL_FRAMEBUFFER, sceneBuffers[0]);
     for (int i = 0; i < models.size(); i++) {
         SceneElement se = models[i];
         se.m->Draw(*(se.shader));
     }
     //return the texture Buffer.
-    //return sceneBuffers[1];
 }
 
 bool Scene::nextTriangle(Vertex *A, Vertex *B, Vertex *C) {
