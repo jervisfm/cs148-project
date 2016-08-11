@@ -309,12 +309,12 @@ GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader ga
         // Use cooresponding shader when setting uniforms/drawing objects
     lightingShader.Use();
     GLint lightColorLoc  = glGetUniformLocation(lightingShader.Program, "lightColor");
-    GLint lightPosLoc    = glGetUniformLocation(lightingShader.Program, "lightPos");
+    GLint lightPosLoc    = glGetUniformLocation(lightingShader.Program, "endLightPos");
     GLint viewPosLoc     = glGetUniformLocation(lightingShader.Program, "viewPos");
     glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f);
     glUniform3f(lightPosLoc,    lights[0].startPos.x, lights[0].startPos.y, lights[0].startPos.z);
     glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "endLightPos"), lights[0].endPos.x, lights[0].endPos.y, lights[0].endPos.z);
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "lightPos"), lights[0].endPos.x, lights[0].endPos.y, lights[0].endPos.z);
     glUniform1f(glGetUniformLocation(lightingShader.Program, "lightRadius"), (float)lights[0].radius);
     //std::cout<<"Radius is "<<lights[0].radius<<std::endl;
         // Create camera transformations

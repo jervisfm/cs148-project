@@ -130,14 +130,14 @@ int main()
 	finalShader.Use();
 
 	glActiveTexture(GL_TEXTURE0);
-        glEnable(GL_TEXTURE_2D);
+        //glEnable(GL_TEXTURE_2D);
 	GLuint lightLoc = glGetUniformLocation(finalShader.Program, "lightTexture");
         std::cout<<"Light Location: "<<lightLoc<<std::endl;		
 	glUniform1i(lightLoc, 0);
 	glBindTexture(GL_TEXTURE_2D, lightTexture);
 	
 	glActiveTexture(GL_TEXTURE1);
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	GLuint sceneLocation = glGetUniformLocation(finalShader.Program, "sceneTexture");
         std::cout<<"Scene Location: "<<sceneLocation<<std::endl;	
 	glUniform1i(sceneLocation, 1);
