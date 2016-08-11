@@ -98,6 +98,8 @@ int main()
         //bind the lights
         ls->bindLights(shader);
 
+    	// Move the camera
+        Controls::Do_Movement();
 
         //Update the view and projection matrices
         Controls::updateState();
@@ -107,24 +109,24 @@ int main()
         lightShader.Use();
         Controls::bindState(lightShader);
 
-        // Move the camera
-        Controls::Do_Movement();
+    
 
-        shader.Use();
+        //shader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//scene texture in gl_TEXTURE1        
 	//GLuint sceneTexture = 
-	scene->drawScene();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//scene->drawScene();
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //lightShader.Use();
         //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
         //ls->drawTubes(lightShader);
 
-        Controls::drawBorders(borderShader);
+        //Controls::drawBorders(borderShader);
   	//lightTexture store in GL_TEXTURE2
-        //GLuint lightTexture = lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
-     	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//        GLuint lightTexture = lScattering->
+	lScattering->ScatterLight(ls, lightingShader, gaussianShader, finalPass);
+  //   	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Final combination of scene and Light
 	//finalShader.Use();

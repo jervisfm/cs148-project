@@ -82,7 +82,7 @@ void Scattering::RenderQuad(){
 }
 
 //http://joshbeam.com/articles/dynamic_lightmaps_in_opengl/
-GLfloat* Scattering::createVirtualPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float* arr){
+GLfloat* Scattering::createVirtualPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float* arr, glm::vec3 startPos, glm::vec3 endPos){
 
 	glm::vec4 cube[8];
 	cube[0] = glm::vec4(-1, 1,-1,1); //Front Top Left
@@ -117,16 +117,16 @@ GLfloat* Scattering::createVirtualPlanes(glm::mat4 view, glm::mat4 projection, g
 	edgeFrustrum[3]  = finalCubeVert[7] - finalCubeVert[3]; //bottomRight edge
 	
 	//Variables for virtual plane and lattice's calculation
-	double deltaT = length(edgeFrustrum[0])/(numLattice*length(edgeFrustrum[0]));
+	//double deltaT = length(edgeFrustrum[0])/(numLattice*length(edgeFrustrum[0]));
 	glm::vec3 planeVert[4];
 	glm::vec3 planeEdges[2];
 	//double deltaNx;
 	//double deltaNy;
 	
 	//Place planes inside the light's frustrum (z coordinate of beginning and end)
-	//float startT = (lightPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
-	//float endT = (endLightPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
-	//float deltaT = (startT-endT)/((startT-endT)*numLattice);
+	float startT = (startPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
+	float endT = (endPos.z - finalCubeVert[0].z) /edgeFrustrum[0].z; 
+	float deltaT = (startT-endT)/((startT-endT)*numLattice);
 	//std::cout<<"startT is: "<<startT<<std::endl;	
 	//std::cout<<"endT is: "<<endT<<std::endl;
 	//std::cout<<"deltaT is: "<<deltaT<<std::endl;
@@ -134,7 +134,7 @@ GLfloat* Scattering::createVirtualPlanes(glm::mat4 view, glm::mat4 projection, g
 	for(int i = 0; i < numLattice; i++){
 	    //determine start/end points for new plane
 	    for(int j = 0; j < 4; j++){
-		planeVert[j] = finalCubeVert[j]+edgeFrustrum[j]*(float)/*(startT+(endT-startT)*/pow((deltaT*i),3);
+		planeVert[j] = finalCubeVert[j]+edgeFrustrum[j]*(float)(startT+(endT-startT)*pow((deltaT*i),3));
 		//std::cout<<"Plane Vertices: "<<planeVert[j].z<<std::endl;
 
 	    }
@@ -227,9 +227,9 @@ static GLuint *createFrameBuffer(GLuint* frame_texture, int width, int height){
 
 //GLuint containerVAO = 0;
 //GLuint planeObject;
-void Scattering::createVirtPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos){
+void Scattering::createVirtPlanes(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::vec3 startPos, glm::vec3 endPos){
     GLfloat vert[48*numLattice];
-    GLfloat *vertices = createVirtualPlanes(view, projection, viewPos, vert);
+    GLfloat *vertices = createVirtualPlanes(view, projection, viewPos, vert, startPos, endPos);
     if(planesVAO == 0){
 	// First, set the container's VAO 
     	glGenVertexArrays(1, &planesVAO);
@@ -256,7 +256,7 @@ void Scattering::createVirtPlanes(glm::mat4 view, glm::mat4 projection, glm::vec
 }
 
 // The MAIN function, from here we start the application and run the game loop
-GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader gaussianShader, Shader finalShader)
+void Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader gaussianShader, Shader finalShader)
 {
     
    
@@ -313,7 +313,7 @@ GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader ga
     glUniform3f(viewPosLoc,     camera.Position.x, camera.Position.y, camera.Position.z);
     glUniform3f(glGetUniformLocation(lightingShader.Program, "endLightPos"), lights[0].endPos.x, lights[0].endPos.y, lights[0].endPos.z);
     glUniform1f(glGetUniformLocation(lightingShader.Program, "lightRadius"), (float)lights[0].radius);
-
+    //std::cout<<"Radius is "<<lights[0].radius<<std::endl;
         // Create camera transformations
     //glm::mat4 view = camera.GetViewMatrix();
     //    glm::mat4 projection = glm::perspective(camera.Zoom, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
@@ -327,7 +327,7 @@ GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader ga
         //glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	
 	//MAKE DYNAMIC VIRTUAL PLANES:
-	createVirtPlanes(Controls::getViewMatrix(), Controls::getProjectionMatrix(), camera.Position);
+	createVirtPlanes(Controls::getViewMatrix(), Controls::getProjectionMatrix(), camera.Position, lights[0].startPos, lights[0].endPos);
 	
 	//glBindVertexArray(containerVAO);
 	//glDrawArrays(GL_TRIANGLES, 0, 6*numLattice);	
@@ -349,16 +349,16 @@ GLuint Scattering::ScatterLight(LightState* ls, Shader lightingShader, Shader ga
             if (first_iteration)
                 first_iteration = false;
         }
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//glBindTexture(GL_TEXTURE_2D, lFrameBuffer[1]);   
 
         //BIND TO DEFAULT FRAME BUFFER
 	finalShader.Use();
-	glBindFramebuffer(GL_FRAMEBUFFER, lightRenderFBO[0]);
+	//glBindFramebuffer(GL_FRAMEBUFFER, lightRenderFBO[0]);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);	
 	RenderQuad();
-   	return lightRenderFBO[1];
+   	//return lightRenderFBO[1];
 	
         // Swap the screen buffers
     //    glfwSwapBuffers(window);

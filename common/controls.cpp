@@ -16,7 +16,7 @@ GLfloat Controls::lastX = 400, Controls::lastY = 300;
 GLFWwindow* Controls::window;
 Scene* Controls::scene;
 bool Controls::firstMouse = true;
-GLuint Controls::screenWidth = 800, Controls::screenHeight = 600;
+GLuint Controls::screenWidth = 1024, Controls::screenHeight = 768;
 GLfloat Controls::deltaTime = 0.0f, Controls::lastFrame = 0.0f;
 bool Controls::keys[1024];
 Camera Controls::camera;
@@ -199,6 +199,7 @@ void Controls::bindState(Shader shader)
 {
     projection = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
     view = camera.GetViewMatrix();
+    //std::cout<<view[0][0]<<std::endl;
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 }
