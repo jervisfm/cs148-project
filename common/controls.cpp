@@ -163,7 +163,7 @@ void Controls::Do_Movement()
     //Also, change the position of the active mirror
     if((keys[GLFW_KEY_F1] || keys[GLFW_KEY_F2]) && activeMirror != -1)
     {
-        float degrees = keys[GLFW_KEY_F1] ? 2.f : -2.f;
+        float degrees = keys[GLFW_KEY_F1] ? 1.f : -1.f;
         degrees *= deltaTime;
         Model *mirror = scene->getMirrors()[activeMirror];
         glm::mat4 mat = mirror->getModelMatrix();

@@ -89,7 +89,7 @@ void main()
     vec4 diffuse_texture_color = vec4(texture(texture_diffuse1, TexCoords));
     //diffuse_texture_color.a = 0.1;
     vec4 illuminance = vec4(0.02);
-    vec4 ambient = vec4(0);
+    vec4 ambient = vec4(0.08);
     for(int i = 0; i < numLights; ++i)
     {
         illuminance += ComputeDirectionalTubeLight(allLights[i], FragPos, Normal);

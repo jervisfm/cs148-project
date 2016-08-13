@@ -1,5 +1,6 @@
 ﻿#include "lightstate.h"
 #include "scene.h"
+#include "common/controls.h"
 #include <vector>
 #include <iostream>
 #define GLM_FORCE_RADIANS
@@ -189,9 +190,34 @@ void LightState::bindLights(Shader shader) {
     }
 }
 
+float distanceToLight(vec3 pos, LightRay lr){
+    vec3 vecStart2End = lr.endPos - lr.startPos;
+    vec3 vecPoint2End = lr.endPos - pos;
+    vec3 vecStart2Point = pos - lr.startPos;
+    if(dot(vecStart2Point, vecStart2End) >= 0 && dot(vecPoint2End, vecStart2End) >= 0){
+        return length(cross(vecStart2End, vecStart2Point))/length(vecStart2End);
+    }
+    else {
+        float a = length(pos-lr.endPos), b = length(pos-lr.startPos);
+        return a > b ? b : a;
+    }
+}
+
+struct compareObj {
+    vec3 pos;
+    bool operator() (LightRay l1, LightRay l2) {
+        return distanceToLight(pos, l1) > distanceToLight(pos,l2);
+    }
+};
+
 void LightState::drawTubes(Shader shader)
 {
     vector<LightRay> lr = this->getLightRays();
+    vector<LightRay> principals, secondaries;
+    //order the lightrays by increasing distance to camera
+    compareObj comp;
+    comp.pos = Controls::getCamera().Position;
+    std::sort(lr.begin(), lr.end(), comp);
     vector<glm::mat4> models;
 
     //vector<DirectionalLight>pl = this->primaryLights;
@@ -199,27 +225,89 @@ void LightState::drawTubes(Shader shader)
     //First, the cylinder tops
     for(int i = 0; i < lr.size(); i++)
     {
+        //std::cout << "Distance to lightray :" << distanceToLight(comp.pos, lr[i]) << std::endl;
         if(lr[i].depth == 0)
         {
             //std::cout << "PL (start) :" << lr[i].startPos.x << ", "<< lr[i].startPos.y << ", "<< lr[i].startPos.z << std::endl;
             //std::cout << "PL (end):" << lr[i].endPos.x << ", "<< lr[i].endPos.y << ", "<< lr[i].endPos.z << std::endl;
             models.push_back(cylinderTop->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
+            principals.push_back(lr[i]);
         }
 
+
     }
-    cylinderTop->DrawInstanced(shader, models);
+    //std::cout << "Over" << std::endl;
+    for (int i = 0; i < models.size(); i++) {
+        cylinderTop->setModelMatrix(models[i]);
+        cylinderTop->Draw(shader);
+    }
 
     //And now, the same for the reflected cylinders themselves.
+
     vector<glm::mat4> reflectedModels;
     for(int i = 0; i < lr.size(); i++)
     {
         if(lr[i].depth > 0)
+        {
             reflectedModels.push_back(cylinderSecondary->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius));
+            secondaries.push_back(lr[i]);
+        }
     }
+
+    //For the primary cylinders : if we are inside a cylin
     //Then, the cylinders for the primary lights and secondary lights
     //The order of the calls is important
-
     glEnable(GL_CULL_FACE);
+
+    for(int i = 0; i < lr.size(); i++)
+    {
+        mat4 mat = cylinderSecondary->cylinderTransform(lr[i].startPos, lr[i].endPos, lr[i].radius);
+        if(lr[i].depth > 0)
+        {
+            //draw the secondary
+            glCullFace(GL_FRONT);
+            cylinderSecondary->setModelMatrix(mat);
+            cylinderSecondary->Draw(shader);
+            glCullFace(GL_BACK);
+            //cylinderSecondary->setModelMatrix(reflectedModels[sec]);
+            cylinderSecondary->Draw(shader);
+        }
+        else
+        {
+            glCullFace(GL_FRONT);
+            cylinderPrimary->setModelMatrix(mat);
+            cylinderPrimary->Draw(shader);
+            glCullFace(GL_BACK);
+            cylinderPrimary->setModelMatrix(mat);
+            cylinderPrimary->Draw(shader);
+        }
+    }
+    glDisable(GL_CULL_FACE);
+    /*int princ= 0, sec = 0;
+    for(int i = 0; i < lr.size(); i++)
+    {
+        if((princ >= models.size()) || (sec < models.size() && distanceToLight(comp.pos, secondaries[sec]) > distanceToLight(comp.pos, principals[princ])))
+        {
+            //draw the secondary
+            glCullFace(GL_FRONT);
+            cylinderSecondary->setModelMatrix(reflectedModels[sec]);
+            cylinderSecondary->Draw(shader);
+            glCullFace(GL_BACK);
+            cylinderSecondary->setModelMatrix(reflectedModels[sec]);
+            cylinderSecondary->Draw(shader);
+            sec++;
+        }
+        else { // draw a principal ray
+            glCullFace(GL_FRONT);
+            cylinderPrimary->setModelMatrix(models[princ]);
+            cylinderPrimary->Draw(shader);
+            glCullFace(GL_BACK);
+            cylinderPrimary->setModelMatrix(models[princ]);
+            cylinderPrimary->Draw(shader);
+            princ++;
+        }
+    }
+    /*
     glCullFace(GL_FRONT);
     cylinderPrimary->DrawInstanced(shader, models);
     cylinderSecondary->DrawInstanced(shader, reflectedModels);
@@ -228,5 +316,6 @@ void LightState::drawTubes(Shader shader)
     cylinderPrimary->DrawInstanced(shader, models);
     cylinderSecondary->DrawInstanced(shader, reflectedModels);
     glDisable(GL_CULL_FACE);
+    //*/
 
 }

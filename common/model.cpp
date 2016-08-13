@@ -31,7 +31,7 @@ GLint TextureFromFile(const char* path, string directory)
 
 void Model::Draw(Shader shader)
 {
-    if (this->pathName.find("pyramid") != string::npos)
+    if (this->pathName.find("pyramid") != string::npos || this->pathName.size() < 1)
         glStencilMask(0x00);
     else
         glStencilMask(0xFF);
