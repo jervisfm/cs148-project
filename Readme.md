@@ -23,6 +23,11 @@ If the library was installed into /usr/local/lib, you may need to copy it into /
 
 For your convenience, copies of the above third party libraries are also available under the third_party_deps/ folder of this project.
 
+## Gameplay
+Movement : WASD to move the player, mouse to move the camera angle. When close to a mirror (it has to be highlited) : F1 / F2 to turn it clockwise / counterclockwise.
+
+Edit mode (for debugging / map creation) : press "E" to toggle edit mode, press Enter to stick to the currentlly selected (i.e. "red-tinted" model). When moving around, the model will follow the player. Press Enter again when the model has reached its final destination.
+
 
 ## Images
 ### Pyramid Model 1
